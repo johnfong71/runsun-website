@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RunSun | NVIDIA Vera Rubin・B300・H200 の GPU クラウド</title>
+  <meta name="description" content="NVIDIA Vera Rubin（予約受付中・2027年Q2提供開始）を中心とした RunSun の GPU クラウド。B300（Blackwell Ultra）と H200 を日本で提供中。Reserved / On-demand の計算資源と、LLM トークン基盤 Token Engine を提供します。">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    /* Enable the motion layer only when the visitor has not asked for
+       reduced motion; script.js reveals the elements this class hides. */
+    if (window.matchMedia && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('motion-ok');
+    }
+  </script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="ic-gpu" viewBox="0 0 24 24"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/><rect x="10.2" y="10.2" width="3.6" height="3.6" rx="0.8"/><path d="M9.5 6.5V3.5M14.5 6.5V3.5M9.5 20.5v-3M14.5 20.5v-3M6.5 9.5H3.5M6.5 14.5H3.5M20.5 9.5h-3M20.5 14.5h-3"/></symbol>
+      <symbol id="ic-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4M7.5 14.5h3M7.5 17.5h5"/></symbol>
+      <symbol id="ic-bolt" viewBox="0 0 24 24"><path d="M13 2.5 4.5 14H11l-1 7.5L18.5 10H12z"/></symbol>
+      <symbol id="ic-cloud" viewBox="0 0 24 24"><path d="M7 18.5h9.5a4.5 4.5 0 0 0 .9-8.85A6 6 0 0 0 5.7 11.1 3.8 3.8 0 0 0 7 18.5z"/></symbol>
+      <symbol id="ic-box" viewBox="0 0 24 24"><path d="M12 3 21 7.5v9L12 21l-9-4.5v-9z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/></symbol>
+      <symbol id="ic-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="7.5" ry="2.8"/><path d="M4.5 5.5v13c0 1.55 3.36 2.8 7.5 2.8s7.5-1.25 7.5-2.8v-13"/><path d="M4.5 12c0 1.55 3.36 2.8 7.5 2.8s7.5-1.25 7.5-2.8"/></symbol>
+      <symbol id="ic-db-fast" viewBox="0 0 24 24"><ellipse cx="10.5" cy="5.3" rx="7" ry="2.6"/><path d="M3.5 5.3v13c0 1.5 3.13 2.7 7 2.7 1.15 0 2.24-.1 3.2-.3"/><path d="M18.3 11.4 15 16.4h2.6l-2 4.4 4.9-5.9h-2.7z"/></symbol>
+      <symbol id="ic-layers" viewBox="0 0 24 24"><path d="M12 3.5 21.5 8 12 12.5 2.5 8z"/><path d="M3.5 12.2 12 16.4l8.5-4.2"/><path d="M3.5 16 12 20.2 20.5 16"/></symbol>
+      <symbol id="ic-nodes" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.4"/><circle cx="4.5" cy="5.5" r="1.9"/><circle cx="19.5" cy="5.5" r="1.9"/><circle cx="5" cy="19" r="1.9"/><circle cx="19" cy="19" r="1.9"/><path d="M10.2 10.2 6 7M13.8 10.2 18 7M10.3 13.9l-3.5 3.5M13.7 13.9l3.5 3.5"/></symbol>
+      <symbol id="ic-route" viewBox="0 0 24 24"><circle cx="5" cy="19" r="2.2"/><circle cx="19" cy="5" r="2.2"/><path d="M7.2 19H15a2 2 0 0 0 2-2V7.2"/></symbol>
+      <symbol id="ic-swap" viewBox="0 0 24 24"><path d="M3.5 8h13M13.5 4l4 4-4 4"/><path d="M20.5 16h-13M10.5 12l-4 4 4 4"/></symbol>
+      <symbol id="ic-pin" viewBox="0 0 24 24"><path d="M12 21.2S4.8 15.6 4.8 9.6a7.2 7.2 0 1 1 14.4 0c0 6-7.2 11.6-7.2 11.6z"/><circle cx="12" cy="9.6" r="2.6"/></symbol>
+      <symbol id="ic-grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></symbol>
+      <symbol id="ic-headset" viewBox="0 0 24 24"><path d="M4.5 15v-2.5a7.5 7.5 0 0 1 15 0V15"/><rect x="3" y="14.5" width="4" height="6" rx="1.8"/><rect x="17" y="14.5" width="4" height="6" rx="1.8"/><path d="M19.5 20.5c0 1.7-1.8 2.5-4 2.5h-2"/></symbol>
+      <symbol id="ic-server" viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="7" rx="1.8"/><rect x="3.5" y="13" width="17" height="7" rx="1.8"/><path d="M6.8 7.5h.01M6.8 16.5h.01"/></symbol>
+      <symbol id="ic-shield" viewBox="0 0 24 24"><path d="M12 3 5 5.6v5.2c0 4.6 3 8.4 7 10.2 4-1.8 7-5.6 7-10.2V5.6z"/><path d="M8.8 11.6 11 13.8l4.2-4.4"/></symbol>
+      <symbol id="ic-cycle" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 0 1-12.6 5.6M4.5 12a7.5 7.5 0 0 1 12.6-5.6"/><path d="M17.6 2.8v3.6h-3.6M6.4 21.2v-3.6h3.6"/></symbol>
+      <symbol id="ic-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.4 3.7 5.2 3.7 8.5s-1.2 6.1-3.7 8.5c-2.5-2.4-3.7-5.2-3.7-8.5s1.2-6.1 3.7-8.5"/></symbol>
+      <symbol id="ic-factory" viewBox="0 0 24 24"><path d="M3 21V10.5l6 4v-4l6 4V6.5h6V21"/><path d="M2.5 21h19M6.8 17.8h.01M11 17.8h.01M15.2 17.8h.01"/></symbol>
+    </defs>
+  </svg>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="logo" href="#top"><img class="brand-logo" src="assets/runsun-logo.png" alt="RunSun"></a>
+
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">メニュー</button>
+
+      <nav class="site-nav" id="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="#about">特長</a></li>
+          <li><a href="#industries">業界ソリューション</a></li>
+          <li><a href="#gpus">GPU</a></li>
+          <li><a href="#services">サービス</a></li>
+          <li><a href="#token">Token Engine</a></li>
+          <li><a href="#pricing">料金</a></li>
+          <li><a href="#regions">リージョン</a></li>
+          <li><a href="#contact">お問い合わせ</a></li>
+        </ul>
+      </nav>
+
+      <a class="locale-link" href="https://www.runsuncloud.com/" lang="en" hreflang="en">English</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero: rotating banners -->
+    <section class="hero" id="top">
+      <div class="wrap">
+        <div class="carousel" id="hero-carousel">
+          <div class="stage">
+            <section class="slide s-jp1 active">
+              <div class="inner">
+                <span class="badge">日本で提供中 · イチオシ</span>
+                <h2>NVIDIA <span>B300</span> — 日本で提供中</h2>
+                <p>最新の Blackwell Ultra GPU を、日本のお客様向けに提供中。大規模な学習・推論ワークロードに対応します。</p>
+                <a class="cta" href="#contact" data-product="NVIDIA B300">見積もりを依頼</a>
+              </div>
+            </section>
+            <section class="slide s-jp2">
+              <div class="inner">
+                <span class="badge">日本で提供中 · イチオシ</span>
+                <h2>NVIDIA <span>H200</span> — 日本で提供中</h2>
+                <p>大容量 HBM を備えた Hopper アーキテクチャの実力派。大規模言語モデルの推論基盤として、日本でもご利用いただけます。</p>
+                <a class="cta" href="#contact" data-product="NVIDIA H200">見積もりを依頼</a>
+              </div>
+            </section>
+            <section class="slide s-jp3">
+              <div class="inner">
+                <span class="badge">国内サポート</span>
+                <h2>日本法人が、日本語で支援します</h2>
+                <p>東京の日本法人が窓口となり、導入相談から運用まで日本語でサポート。海外プラットフォームを、国内取引の安心感で。</p>
+                <div class="firms">
+                  <div><b>RUNSUN CLOUD AI 株式会社</b>東京・丸の内（三菱ビル）</div>
+                </div>
+                <a class="cta" href="#contact">お問い合わせ</a>
+              </div>
+            </section>
+          </div>
+          <div class="dots"></div>
+        </div>
+
+        <ul class="stats">
+          <li class="stat"><span class="stat-note">Blackwell（GB200 NVL72）比のトークン処理量／MW ― Vera Rubin NVL72 と Groq 3 LPX の組み合わせ、1兆パラメータ級モデル（NVIDIA 発表）</span> <strong>最大35倍</strong></li>
+          <li class="stat stat-fit"><span class="stat-note">GPU（予約・提供可能な最大規模）</span> <strong>最大10,000 GPU</strong></li>
+          <li class="stat"><span class="stat-note">ConnectX-9 ネットワーク帯域（GPU 1基あたり、NVIDIA 公表）</span> <strong>1.6 Tb/s</strong></li>
+          <li class="stat"><span class="stat-note">市場で提供される同等構成と比べたコスト削減</span> <strong>最大50%</strong></li>
+        </ul>
+
+        <div class="marquee reveal" aria-hidden="true">
+          <div class="marquee-track">
+            <span>Vera Rubin &middot; B300 &middot; H200 &middot; Vera Rubin &middot; B300 &middot; H200 &middot;</span>
+            <span>Vera Rubin &middot; B300 &middot; H200 &middot; Vera Rubin &middot; B300 &middot; H200 &middot;</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+        <!-- About (formerly Why RunSun) -->
+    <section class="section" id="about">
+      <div class="wrap">
+        <h2>RunSun の特長</h2>
+        <p class="section-intro">RunSun は、AI 時代のために構築されたクラウドコンピューティングのサービスプロバイダーです。先進的で弾力性のある計算資源をお客様ごとにカスタマイズして提供し、生成 AI、自動運転、ゲノミクス、レンダリング、スマート製造など急成長する AI ワークロードを、複数の深層学習フレームワークとモデルホスティングで支えます。テクノロジー主導・顧客中心の RunSun は、業界をリードする AI インフラを基盤に、AI 革命がもたらす可能性とビジネスの実際のニーズとの間をつなぎます。</p>
+        <!-- About 行画像（1・2・4・5 行目）：John / RunSun 提供素材（2026-11-10 差し替え、1600x900 に統一処理）。3 行目は再描画したフルスタック構成図（サービス節でも使用）。 -->
+        <div class="about-rows">
+          <article class="about-row">
+            <figure>
+              <img src="assets/about-latest-gpu.jpg" alt="データセンター内のガラスケースに展示された、ラックスケールGPUシステム3台（金・銀・緑）" loading="lazy">
+              <figcaption>ガラスケースに展示されたラックスケールGPUシステム3台（金・銀・緑）。</figcaption>
+            </figure>
+            <div>
+              <h3>最新の GPU モデル</h3>
+              <p>NVIDIA の各世代を、登場に合わせて提供します。B300 と H200 は本日提供中で、次世代プラットフォーム Vera Rubin は 2027年Q2 の提供開始に向けて既に予約受付中です。ハードウェアのロードマップが、単一の製品サイクルに縛られることはありません。</p>
+            </div>
+          </article>
+          <article class="about-row flip">
+            <figure>
+              <img src="assets/about-reference-arch.jpg" alt="左はNVIDIAラックのネットワーク機器のクローズアップ、右はAPI Server／GPU Planner／Smart Router／Cache Manager／Communication Library のレイヤー型ソフトウェアスタック" loading="lazy">
+              <figcaption>ラックのネットワーク機器（左）と、レイヤー型のプラットフォームスタック（右）。</figcaption>
+            </figure>
+            <div>
+              <h3>NVIDIA リファレンスアーキテクチャ</h3>
+              <p>GPU サーバー、ネットワーク、階層型ストレージ、セキュリティは、NVIDIA 自身がプラットフォーム検証に用いるリファレンスアーキテクチャに沿って導入します。その設計に合わせることが、モデルやフレームワークの進化の中でも互換性と持続可能性を保ちます。</p>
+            </div>
+          </article>
+          <article class="about-row">
+            <figure>
+              <img src="assets/fullstack-diagram.png" alt="RunSun AIDC プラットフォームのフルスタック構成図" loading="lazy">
+              <figcaption>RunSun AIDC プラットフォーム ― プラットフォーム自体のフルスタック構成図</figcaption>
+            </figure>
+            <div>
+              <h3>完全なソフトウェアスイートとフレームワーク</h3>
+              <p>学習と推論のスタックは、裸のハードウェアではなく使える状態で届きます。オープンソースの AI フレームワークとツール群、NVIDIA AI Enterprise スイート、RunSun の管理・監視を揃え、お客様のチームはプラットフォームの配管工事ではなく、モデルとプロダクトに時間を使えます。</p>
+            </div>
+          </article>
+          <article class="about-row flip">
+            <figure>
+              <img src="assets/about-proprietary-cloud.jpg" alt="バイナリコードと発光するノードのネットワーク上に浮かぶ、デジタルボールトリングの中の金色の南京錠" loading="lazy">
+              <figcaption>デジタルボールトリングの中の金色の南京錠 ― 独自AIのためのセキュリティと主権。</figcaption>
+            </figure>
+            <div>
+              <h3>独自の AI クラウド</h3>
+              <p>お客様のクラスタは、RunSun が自社開発し8年以上磨いてきた独自クラウドプラットフォームの上で、専用・分離された環境で稼働します。GPU クラスタとストレージをテナントごとに分離することが、セキュリティとパフォーマンスの両立につながります。</p>
+            </div>
+          </article>
+          <article class="about-row">
+            <figure>
+              <img src="assets/about-tailored-services.jpg" alt="歯車アイコンのカスタマイズ・ホログラムをタップする指と、サービスショートカットアイコンの列" loading="lazy">
+              <figcaption>カスタマイゼーション ― ワークロードに合わせ、細部まで調整するサービス。</figcaption>
+            </figure>
+            <div>
+              <h3>テーラーメイドのサービス</h3>
+              <p>標準プラットフォームの上に、ワークロードに合わせた形で計算資源を提供します。構成、期間、提供モデルをジョブに合わせ、ログイン情報を渡すだけではない、導入のチューニングまで担うエンジニアが支援する、競争力のあるテーラーメイドのサービスです。</p>
+            </div>
+          </article>
+        </div>
+        <div class="partner-strip">
+          <div class="partner-panel">
+        <div class="partner-logo">
+          <img src="assets/nvidia-preferred-partner.png" alt="NVIDIA Preferred Partner" loading="lazy">
+        </div>
+        <div>
+          <h2>世界的な AI コンピューティングのリーダーが支援</h2>
+          <p class="section-intro">RunSun は NVIDIA と提携し、AI を開発するお客様にアクセラレーテッドコンピューティング基盤を提供しています。</p>
+        </div>
+      </div>
+        </div>
+      </div>
+    </section>
+
+<!-- Industries -->
+    <!-- 業界写真：全8点とも John / RunSun 提供素材（2026-11-10 差し替え、1600x1000 に統一処理）。リージョン地図ウォーターマーク：日本 ―「JapanGrey borders」（パブリックドメイン） -->
+    <section class="section section-alt" id="industries">
+      <div class="wrap">
+        <h2>業界ソリューション</h2>
+        <p class="section-intro">RunSun の計算資源をご利用のお客様と、その用途をご紹介します。</p>
+        <div class="sovereign">
+          <h3>Enterprise Sovereign AI</h3>
+          <p class="sovereign-tag">The Elasticity of Public Cloud. The Sovereignty of Private AI.</p>
+          <p>Enterprise Sovereign AI は、パブリック AI の力を活用しながら、企業が自社独自のインテリジェンスを構築し、管理し、継続的に改善していくことを可能にします。</p>
+          <p>このアーキテクチャの中核にあるのが Proprietary AI Factory です。企業専用に設計された、専門的に運用管理され、弾力的に拡張可能な AI インフラストラクチャです。</p>
+          <figure class="sovereign-figure">
+            <img src="assets/sovereign-ai-flywheels.jpg" alt="Enterprise Sovereign AI の概念図：Proprietary AI Factory を中心に、Enterprise Data Flywheel（プライベートかつ独自）と外側の Public Data Flywheel という2つのデータフライホイールが循環する" loading="lazy">
+          </figure>
+          <div class="sovereign-grid">
+            <div class="sovereign-card">
+              <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-cloud"/></svg></span>
+              <p>Public AI Cloud では計算資源と AI サービスが複数の顧客の間で共有されますが、Proprietary AI Factory は専用の計算容量、分離された環境、そして企業のモデル、データ、知的財産に対するより大きなコントロールを提供します。</p>
+            </div>
+            <div class="sovereign-card">
+              <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-factory"/></svg></span>
+              <p>自社所有のオンプレミス AI ファクトリーは多額の初期投資を必要とし、導入済みの容量に制約されます。これに対して Proprietary AI Factory は、マネージドな運用、柔軟な容量拡張、事業ニーズの変化に合わせた AI ワークロードの拡張能力を提供します ― 企業が自らインフラを構築・運用する必要はありません。</p>
+            </div>
+          </div>
+          <p>このアーキテクチャは、相互に補完し合う2つの Data Flywheel を駆動します。</p>
+          <div class="sovereign-grid">
+            <div class="sovereign-card">
+              <h4><span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-cycle"/></svg></span> Enterprise Data Flywheel</h4>
+              <p>Enterprise Data Flywheel は、企業独自の業務データ、運用経験、アプリケーションからのフィードバックを、ポストトレーニングを通じて継続的に改善されるプライベート AI モデルへと変換します。専用の AI インフラに支えられ、企業の管理下にあり続ける、複利のように積み上がっていくインテリジェンスの優位性を生み出します。</p>
+            </div>
+            <div class="sovereign-card">
+              <h4><span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-globe"/></svg></span> Public Data Flywheel</h4>
+              <p>Public Data Flywheel により、企業はパブリック AI モデルの進歩による恩恵を受けながら、許可された、プライバシーを保つデータと知見を選択的に、より広い AI エコシステムと共有できます。</p>
+            </div>
+          </div>
+          <p>2つのフライホイールが一体となることで、企業はパブリックなインテリジェンスの規模を活用しながら、自社独自の差別化された AI 能力を発展させることができます。</p>
+          <p class="sovereign-close">Own Your Intelligence. Scale Without Limits. Stay Sovereign.</p>
+        </div>
+        <div class="card-grid cols-2">
+          <article class="card media-card">
+            <img src="assets/industry-ai-startups.jpg" alt="歯車と回路、発光する神経の枝で満たされた二つの頭部シルエット——人工知能" loading="lazy">
+            <div class="card-body">
+              <h3>AI スタートアップ</h3>
+              <p class="card-kicker">AI 研究開発企業・プロダクトチーム向け</p>
+              <p>AI スタートアップにとって、学習のカレンダーこそがプロダクトのロードマップです。事前学習、ファインチューニング、評価のジョブが、次のモデルの出荷時期を決めます。RunSun はハードウェアを買わずにクラスタ規模の計算資源を提供します。学習時は大きく拡張し、ローンチ時は安定した推論容量を確保し、アプリケーション開発そのものも同じプラットフォームで行えます。</p>
+            </div>
+          </article>
+          <article class="card media-card">
+            <img src="assets/industry-smart-city.jpg" alt="夕暮れの都市の大通り、センサーの光環をまとうコネクテッドカーとデータネットワークの重ね表示" loading="lazy">
+            <div class="card-body">
+              <h3>スマートシティ</h3>
+              <p class="card-kicker">自治体および関連企業向け</p>
+              <p>都市のシステムは、眠らない推論ワークを生み続けます。解析すべきカメラネットワーク、処理すべき IoT テレメトリ、リアルタイムで把握すべき交通。映像・画像解析、IoT とデータ分析、スマート交通のワークロードを、自治体とその構築を担う企業に RunSun の GPU 計算資源が支えます。</p>
+            </div>
+          </article>
+          <article class="card media-card">
+            <img src="assets/industry-manufacturing.jpg" alt="自動車工場のラインで車体を組み立てるロボットアーム" loading="lazy">
+            <div class="card-body">
+              <h3>製造</h3>
+              <p class="card-kicker">生産・製造企業向け</p>
+              <p>工場はシミュレーションの問題になりつつあります。生産ラインのデジタルツイン、全数を検査するビジョンモデル、自ら再計画する物流。デジタルツインシミュレーション、工業検査・品質検査、スマート物流、設備メンテナンス分析など、GPU のスループットが効く計算集約型ワークロードを RunSun で実行できます。</p>
+            </div>
+          </article>
+          <article class="card media-card">
+            <img src="assets/industry-internet.jpg" alt="画像生成・コード・データベースなどのツールノードをつなぐAIエージェントのワークフロー図" loading="lazy">
+            <div class="card-body">
+              <h3>インターネット</h3>
+              <p class="card-kicker">EC、ゲーム、コンテンツプラットフォーム向け</p>
+              <p>コンシューマー向けインターネットは、再学習し続けるモデルと、オンデマンドで描かれるメディアの上に成り立っています。レコメンデーションエンジン、デジタルヒューマン、仮想世界。EC、ゲーム、コンテンツのプラットフォームが、AI レコメンデーション、デジタルヒューマン生成、メタバースレンダリングを RunSun で実行します。需要の急増が日常であるワークロードです。</p>
+            </div>
+          </article>
+          <article class="card media-card">
+            <img src="assets/industry-finance.jpg" alt="金融街のスカイラインに浮かぶAIの脳と相場チャート、ドル記号" loading="lazy">
+            <div class="card-body">
+              <h3>金融</h3>
+              <p class="card-kicker">金融機関、証券会社、プライベートエクイティ、投資ファンド向け</p>
+              <p>金融のワークロードは二つに分かれます。クオンツ分析、バックテスト、投資アルゴリズム研究など計算資源を食うリサーチと、取引をリアルタイムにスコアリングする不正検知やリスク管理など、瞬きもできない本番システムです。両方を、機微なデータに必要な分離された環境の中で RunSun で実行できます。</p>
+            </div>
+          </article>
+          <article class="card media-card">
+            <img src="assets/industry-education.jpg" alt="未来的なメガネをかけてパソコンに向かう生徒、キーボードから立ち上がるホログラムのロボット、ハイテクな教室" loading="lazy">
+            <div class="card-body">
+              <h3>教育</h3>
+              <p class="card-kicker">大学・研究機関向け</p>
+              <p>大学に必要な計算資源は二種類あります。学期に合わせて柔軟に増減する教育用と、締め切りに間に合わせる研究用です。AI 教育と実践、深層学習・アクセラレーテッドコンピューティング・データサイエンスの研究を、1つのコースの実習室から機関規模のクラスタまで RunSun が支えます。</p>
+            </div>
+          </article>
+          <article class="card media-card">
+            <img src="assets/industry-design.jpg" alt="夕暮れの湖畔に建つ未来的な有機形態の建築——パラメトリックなAI支援デザイン" loading="lazy">
+            <div class="card-body">
+              <h3>デザイン</h3>
+              <p class="card-kicker">広告主、建築設計機関向け</p>
+              <p>デザインの仕事はレンダリングの仕事です。反復できる速さで返ってこなければならないシーン、ウォークスルー、生成されたコンセプト。グラフィックスレンダリング、AIGC デザインプラットフォーム、GPU デスクトップ VDI を RunSun で提供し、分散したチームが1つのハイエンドワークステーションプールを共有できます。</p>
+            </div>
+          </article>
+          <article class="card media-card">
+            <img src="assets/industry-biotech.jpg" alt="半分が回路基板、半分がDNA二重らせんと生きた細胞でできた顔——AIとバイオテクノロジーの融合" loading="lazy">
+            <div class="card-body">
+              <h3>バイオテクノロジー</h3>
+              <p class="card-kicker">製薬・バイオ企業向け</p>
+              <p>現代の生物学は計算のパイプラインです。アライメントすべきシーケンスデータ、シミュレーションで折りたたむタンパク質構造、実験台に上がる前にスクリーニングする分子ライブラリ。遺伝子シーケンス解析、タンパク質折りたたみシミュレーション、低分子スクリーニングを、製薬・バイオ企業が RunSun の GPU クラスタで実行します。</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Flagship GPUs: B300 and H200 first for Japan -->
+    <section class="section" id="gpus">
+      <div class="wrap">
+        <h2>日本で提供中 ― B300 と H200 を中心に</h2>
+        <p class="section-intro">日本で現在ご利用いただけるのは B300（Blackwell Ultra）と H200 です。どちらも日本のお客様向けに、国内窓口からご提供します。</p>
+        <div class="card-grid cols-2">
+          <article class="card card-flagship">
+            <h3>NVIDIA B300</h3>
+            <p class="status-line"><span class="status-tag status-available">提供中</span></p>
+            <p>8 GPU 構成の HGX B300 ノードで提供する Blackwell Ultra GPU です。</p>
+            <dl class="specs">
+              <div><dt>メモリ</dt><dd>288GB HBM3e</dd></div>
+              <div><dt>メモリ帯域</dt><dd>8TB/s</dd></div>
+              <div><dt>演算性能</dt><dd>15 PFLOPS NVFP4（dense）</dd></div>
+              <div><dt>インターコネクト</dt><dd>NVLink 5、1,800GB/s</dd></div>
+              <div><dt>ノード</dt><dd>8 GPU HGX B300、合計 2.3TB HBM3e</dd></div>
+            </dl>
+          </article>
+          <article class="card card-flagship">
+            <h3>NVIDIA H200</h3>
+            <p class="status-line"><span class="status-tag status-available">提供中</span></p>
+            <p>大容量・高速メモリを備えた Hopper 世代のフラッグシップ。LLM 推論と HPC の基盤として提供中です。</p>
+            <dl class="specs">
+              <div><dt>メモリ</dt><dd>141GB HBM3e</dd></div>
+              <div><dt>メモリ帯域</dt><dd>4.8TB/s</dd></div>
+              <div><dt>演算性能</dt><dd>FP8 Tensor Core 3,958 TFLOPS（sparse）</dd></div>
+              <div><dt>インターコネクト</dt><dd>NVLink 900GB/s</dd></div>
+              <div><dt>形態</dt><dd>HGX H200（4 / 8 GPU）</dd></div>
+            </dl>
+          </article>
+        </div>
+        <h3 class="subhead">その他のプラットフォーム</h3>
+        <div class="card-grid cols-1">
+          <article class="card">
+            <h3>そのほかの提供モデル</h3>
+            <p>下記のモデルもラインナップしています。</p>
+            <ul class="chips">
+              <li>NVIDIA B200</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Vera Rubin -->
+    <section class="section section-alt" id="vera-rubin">
+      <div class="wrap">
+        <div class="rubin-panel">
+          <div>
+            <span class="badge">フラッグシップ・予約受付中</span>
+            <h2>NVIDIA Vera Rubin</h2>
+            <p class="section-intro">次世代フラッグシップの予約受付を開始しました。2027年Q2に提供開始予定です。現在は B300・H200 でご利用いただき、Vera Rubin への移行パスをご用意します。</p>
+            <div class="btn-group">
+              <a class="btn btn-primary" href="#contact" data-product="NVIDIA Vera Rubin（予約）">Vera Rubin を予約する</a>
+            </div>
+          </div>
+          <ul class="tick-list">
+            <li>Rubin GPU + HBM4</li>
+            <li>Vera CPU</li>
+            <li>NVLink 6</li>
+            <li>B300・H200 からの移行パス</li>
+          </ul>
+        </div>
+
+        <div class="vr-block vr-top">
+          <div class="vr-top-copy">
+            <h3>Vera Rubin NVL72 ハイライト</h3>
+            <p>72 基の Rubin GPU と 36 基の Vera CPU を、NVLink 6 でひとつの巨大な GPU として接続するラック規模の AI スーパーコンピュータです。ラックあたり NVFP4 推論 3,600 PFLOPS、HBM4 は合計 20.7 TB。以下、NVIDIA 公式画像と公表スペックで要点を紹介します（全 8 章の詳細版は英語サイトに掲載）。</p>
+          </div>
+          <figure>
+            <img src="assets/vera-rubin-nvl72-rack.jpg" alt="NVIDIA Vera Rubin NVL72 ラック全体（コンピュートトレイ18台とNVLinkスイッチトレイ9台）" loading="lazy">
+            <figcaption>画像：NVIDIA ― Vera Rubin NVL72 ラック。出典：<a href="https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/">NVIDIA Vera Rubin NVL72 製品ページ</a>（nvidia.com）</figcaption>
+          </figure>
+        </div>
+
+        <div class="vr-block vr-grid">
+          <figure>
+            <img src="assets/rubin-gpu.png" alt="NVIDIA Rubin GPU の製品イメージ（ダイと主要スペック）" loading="lazy">
+            <figcaption>画像：NVIDIA ― Rubin GPU。出典：NVIDIA Technical Blog「<a href="https://developer.nvidia.com/blog/inside-the-nvidia-rubin-platform-six-new-chips-one-ai-supercomputer/">Inside the NVIDIA Rubin Platform</a>」（Figure 7）</figcaption>
+          </figure>
+          <div>
+            <h3>Rubin GPU</h3>
+            <p>1 GPU あたり NVFP4 推論 50 PFLOPS、HBM4 288 GB（帯域 最大 22 TB/s）、NVLink 6 は 1 GPU あたり 3.6 TB/s。Blackwell 比で推論 最大 5 倍、学習 3.5 倍と NVIDIA は公表しています。</p>
+            <ul class="vr-specs">
+              <li><b>50 PFLOPS</b> NVFP4 推論 ・ <b>35 PFLOPS</b> NVFP4 学習（GPU 1 基あたり）</li>
+              <li><b>HBM4 288 GB</b>（GPU 1 基あたり）、メモリ帯域は最大 <b>22 TB/s</b>（Blackwell の約 2.8 倍）</li>
+              <li><b>3.6 TB/s</b> NVLink 6 帯域（GPU 1 基あたり、前世代の 2 倍）</li>
+              <li>推論は<b>最大 5 倍</b>、学習は<b>最大 3.5 倍</b>の性能（対 Blackwell、NVIDIA 発表）</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="vr-block vr-grid">
+          <div>
+            <h3>コンピュートトレイ</h3>
+            <p>1U トレイに Vera Rubin Superchip を 2 基（Vera CPU 2 基＋Rubin GPU 4 基）搭載し、トレイあたり NVFP4 200 PFLOPS。接続はすべてミッドプレーン経由で、トレイ自体はケーブルレス・ホースレス・ファンレスです。</p>
+            <ul class="vr-specs">
+              <li><b>200 PFLOPS</b> NVFP4 AI 性能（トレイ 1 台あたり）</li>
+              <li><b>14.4 TB/s</b> NVLink 6 帯域（トレイ 1 台あたり）</li>
+              <li>トレイの組み立て時間は<b>約 5 分</b>（Grace Blackwell トレイの約 2 時間から短縮）</li>
+              <li><b>100% 液冷</b> ― CPU と GPU にコールドプレートを搭載し、トレイ内にファンは一切なし</li>
+            </ul>
+          </div>
+          <figure>
+            <img src="assets/compute-tray.webp" alt="NVIDIA DGX Vera Rubin コンピュートトレイの上面注釈図（Vera CPU 2基、Rubin GPU 4基、SOCAMM 16枚、内部マニホールド、バスバーコネクタ、Connect-X 9 ベイ、BlueField-4、配電ボード、冷水入口・温水出口）" loading="lazy">
+            <figcaption>画像：NVIDIA ― DGX Vera Rubin コンピュートトレイの上面注釈図。出典：NVIDIA DGX Vera Rubin NVL72 User Guide「Hardware」（docs.nvidia.com）</figcaption>
+          </figure>
+        </div>
+
+        <div class="vr-block vr-grid">
+          <figure>
+            <img src="assets/bluefield-4.webp" alt="NVIDIA BlueField-4 DPU の製品イメージ（64コア Grace CPU、ConnectX-9、800 Gb/s）" loading="lazy">
+            <figcaption>画像：NVIDIA ― BlueField-4 DPU。出典：NVIDIA Technical Blog（Figure 13）</figcaption>
+          </figure>
+          <div>
+            <h3>ネットワーク ― ConnectX-9 と BlueField-4</h3>
+            <p>ラック外のスケールアウトは、ポートあたり 800 Gb/s の ConnectX-9 SuperNIC と、トレイごとに搭載される BlueField-4 DPU が担います。BlueField-4 は 64 コア Grace CPU と ConnectX-9 を統合し、ネットワーク、ストレージ、セキュリティをホストからオフロードします（帯域は BlueField-3 の 2 倍、演算性能は 6 倍）。</p>
+            <ul class="vr-specs">
+              <li><b>ポートあたり 800 Gb/s</b>（InfiniBand／Ethernet）、プログラマブルな RDMA トランスポートを搭載（ConnectX-9）</li>
+              <li>NVL72 トレイ設計で Rubin GPU 1 基あたり <b>1.6 Tb/s</b> のスケールアウト帯域（ConnectX-9）</li>
+              <li>内蔵 ConnectX-9 ダイによる <b>800 Gb/s</b> ネットワーキング（BlueField-3 の 400 Gb/s の 2 倍）</li>
+              <li><b>64 基の Grace コア（Arm Neoverse V2）</b> ― BlueField-3 の <b>6 倍</b>のコンピュート性能</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="vr-block vr-grid">
+          <div>
+            <h3>液冷システムと CDU</h3>
+            <p>ラックは 100% 液冷で、ファンはありません。施設側の水（41°C）は CDU（冷却液分配ユニット）で受け、ラックへ 45°C の冷却液を供給します。45°C 液冷により、同じ電力枠で GPU 数を最大 30% 増やせると NVIDIA は公表しています。</p>
+            <p>コールドプレートはチップ直結（Direct-to-Chip）方式です。冷却液はラックマニホールドとコンピュートトレイ内部のマニホールドを通じて、CPU、GPU、および一部のネットワーク／ストレージコンポーネントに直接取り付けられたコールドプレートへ分配されます。熱は直接液冷ループへ運ばれるため、主要な計算コンポーネントに空冷は不要です。</p>
+            <ul class="vr-specs">
+              <li>ファシリティ水 <b>41°C</b> を CDU へ供給し、CDU からラックへ <b>45°C</b> の冷却液を供給</li>
+              <li>45°C 液冷により、同じ電力枠で GPU を<b>最大 30%</b> 多く搭載可能</li>
+              <li>ラック側ループの冷却液は <b>DI 水または PG25</b>、閉ループで<b>最長 10 年</b>の耐用年数</li>
+              <li><b>100% 液冷</b>ラックで、前世代と同じファシリティ冷却インフラを利用可能</li>
+              <li>NVL72 ラックあたり <b>Rubin GPU 72 基 + Vera CPU 36 基</b></li>
+              <li>コンピュートトレイ全体にわたる<b>チップ直結（Direct-to-Chip）液冷</b></li>
+              <li>CPU、GPU、および一部のネットワーク／ストレージコンポーネントに<b>コールドプレート</b>を搭載</li>
+            </ul>
+            <p class="src">コールドプレートの記述の出典：NVIDIA Vera Rubin NVL72 製品ページ（nvidia.com）。</p>
+          </div>
+          <figure>
+            <img src="assets/mgx-cooling-layout.webp" alt="NVIDIA MGX ラックのフリークーリングレイアウト図（ドライクーラーと熱交換器で全冷却をまかない、水冷チラーはバイパス。AI ファクトリーへ 41°C で供給し、51°C で戻る）" loading="lazy">
+            <figcaption>画像：NVIDIA ― MGX ラックのフリークーリングレイアウト（ドライクーラーと熱交換器で冷却し、機械式チラーをバイパス）。出典：NVIDIA Developer Blog「NVIDIA Vera Rubin POD」（Figure 5）</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- Platform comparison -->
+    <section class="section" id="compare">
+      <div class="wrap">
+        <h2>プラットフォーム比較 ― Vera Rubin を中心に</h2>
+        <p class="section-intro">次世代 Vera Rubin と、日本で提供中の B300・H200 の違いをまとめました。</p>
+        <div class="table-scroll" tabindex="0" role="region" aria-label="GPU プラットフォーム比較表">
+          <table class="price-table compare-table">
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col" class="hl">NVIDIA Vera Rubin NVL72</th>
+                <th scope="col">NVIDIA B300</th>
+                <th scope="col">NVIDIA H200</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">形態</th>
+                <td class="hl">ラック規模システム（72 GPU）</td>
+                <td>8 GPU HGX ノード</td>
+                <td>SXM GPU</td>
+              </tr>
+              <tr>
+                <th scope="row">GPU メモリ</th>
+                <td class="hl">288 GB HBM4 / GPU（ラック合計 20.7 TB）</td>
+                <td>288 GB HBM3e / GPU</td>
+                <td>141 GB HBM3e</td>
+              </tr>
+              <tr>
+                <th scope="row">メモリ帯域</th>
+                <td class="hl">22 TB/s / GPU</td>
+                <td>8 TB/s / GPU</td>
+                <td>4.8 TB/s</td>
+              </tr>
+              <tr>
+                <th scope="row">NVLink</th>
+                <td class="hl">NVLink 6 ― 3.6 TB/s / GPU</td>
+                <td>NVLink 5 ― 1.8 TB/s / GPU</td>
+                <td>NVLink ― 900 GB/s</td>
+              </tr>
+              <tr>
+                <th scope="row">AI 演算性能</th>
+                <td class="hl">NVFP4 推論 50 PFLOPS / GPU</td>
+                <td>NVFP4 15 PFLOPS（dense）/ GPU</td>
+                <td>FP8 3,958 TFLOPS（sparse）</td>
+              </tr>
+              <tr>
+                <th scope="row">RunSun での提供</th>
+                <td class="hl"><span class="status-live">予約受付中 ― 2027年Q2提供開始</span></td>
+                <td>提供中</td>
+                <td>提供中</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="footnote">数値は NVIDIA の公表スペックです。Vera Rubin は NVIDIA Technical Blog / Developer Blog および Vera Rubin NVL72 製品ページ、B300 は Blackwell Ultra プラットフォームの公表値、H200 は NVIDIA 公式 GPU スペック表に基づきます。演算性能は世代ごとの代表的な低精度フォーマット（Rubin / Blackwell は NVFP4、Hopper は FP8）で、世代間で単純比較できるものではありません。Vera Rubin のスペックは NVIDIA 自身が暫定値としており、変更される場合があります。</p>
+      </div>
+    </section>
+
+        <!-- Services (Service Models + Products + Platform, merged) -->
+    <section class="section section-alt" id="services">
+      <div class="wrap">
+        <h2>サービス</h2>
+        <h3 class="services-part first"><span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-gpu"/></svg></span>GPU クラウドサービス</h3>
+        <h3 class="subhead">2つの提供モデル、ひとつの計算資源プール</h3>
+        <p class="section-intro">Reserved と On-demand は同じオーケストレーションされた計算資源プールから提供されます。安定した負荷には確保を、変動する負荷には柔軟性をお選びいただけます。</p>
+        <div class="card-grid cols-2">
+          <article class="card">
+                        <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-calendar"/></svg></span>
+            <h3>Reserved</h3>
+            <p>固定価格・SLA 付きの安定供給。継続的なワークロード向けに 64〜10,000 GPU までご利用いただけます。ご契約時の料金は全期間固定で、当社がご提示できる最も有利なレートを適用します。</p>
+          </article>
+          <article class="card">
+                        <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-bolt"/></svg></span>
+            <h3>On-demand</h3>
+            <p>検証やバースト負荷に使える従量課金のアクセス。最大 200 GPU までご利用いただけます。</p>
+          </article>
+        </div>
+      
+        <h3 class="subhead">GPU を支えるサービス群</h3>
+        <div class="card-grid cols-4">
+          <article class="card">
+                        <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-gpu"/></svg></span>
+            <h3>Cloud Computing Service</h3>
+            <p>学習と推論のための GPU 計算資源。設定済みの ML スタックですぐに利用を開始できます。</p>
+          </article>
+          <article class="card">
+                        <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-box"/></svg></span>
+            <h3>Container Service</h3>
+            <p>コンテナ化した AI ワークロードを RunSun の GPU 上で実行できます。</p>
+          </article>
+          <article class="card">
+                        <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-db"/></svg></span>
+            <h3>Storage Service</h3>
+            <p>データセット、チェックポイント、モデル成果物を計算資源の近くに保管できます。</p>
+          </article>
+          <article class="card">
+                        <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-nodes"/></svg></span>
+            <h3>Networking</h3>
+            <p>ラック内は NVLink、クラスタ間は InfiniBand で接続します。</p>
+          </article>
+        </div>
+        <h3 class="subhead">設定済み ML スタック</h3>
+        <ul class="chips">
+          <li>PyTorch</li>
+          <li>TensorFlow</li>
+          <li>CUDA</li>
+          <li>cuDNN</li>
+          <li>Keras</li>
+          <li>Jupyter</li>
+        </ul>
+      
+        <h3 class="subhead">GPU を支えるプラットフォームサービス</h3>
+        <p class="section-intro">RunSun ドキュメントより、GPU クラウドを完成させるストレージ、ネットワーク、サポートの各サービスです。</p>
+
+        <h3 class="subhead">ストレージサービス ― 3つの階層</h3>
+        <div class="card-grid cols-3">
+          <article class="card">
+                        <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-db-fast"/></svg></span>
+            <h3>DDN ストレージサービス</h3>
+            <p>最高性能の階層です。大規模 AI 学習、深層学習フレームワーク、AI データセンター、AI モデル推論のために設計されています。</p>
+          </article>
+          <article class="card">
+                        <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-layers"/></svg></span>
+            <h3>高性能 Ceph</h3>
+            <p>AI データパイプライン向けのスケーラブルな AI データストレージ。モデルのバージョン管理とキャッシュに対応します。</p>
+          </article>
+          <article class="card">
+                        <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-db"/></svg></span>
+            <h3>通常 Ceph</h3>
+            <p>AI の実験とプロトタイピング、AI モデルのデプロイ、共同 AI 開発のための日常的な分散ストレージです。</p>
+          </article>
+        </div>
+
+        <h3 class="subhead">ネットワークサービス</h3>
+        <div class="card-grid cols-3">
+          <article class="card">
+                        <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-route"/></svg></span>
+            <h3>専用線</h3>
+            <p>GPU クラウド向けの、専用の高帯域接続です。</p>
+          </article>
+          <article class="card">
+                        <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-swap"/></svg></span>
+            <h3>パブリック IP 付き NAT</h3>
+            <p>インスタンス向けに、パブリック IP アドレスを持つマネージド NAT を提供します。</p>
+          </article>
+          <article class="card">
+                        <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-pin"/></svg></span>
+            <h3>Elastic IP アドレス</h3>
+            <p>GPU クラウドコンピューティングサービス向けの Elastic IP アドレス。デプロイの変更に合わせて付け替えできます。</p>
+          </article>
+        </div>
+
+        <div class="card-grid cols-2">
+          <article class="card">
+                        <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-grid"/></svg></span>
+            <h3>マルチ GPU インスタンス</h3>
+            <p>多様な GPU インスタンスタイプをオンデマンドで起動できます。1x、2x、4x、8x GPU のインスタンスを、ジョブに合わせてお選びください。</p>
+          </article>
+          <article class="card">
+                        <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-headset"/></svg></span>
+            <h3>カスタマーサポート</h3>
+            <ul class="tick-list">
+              <li>テクニカルサポート</li>
+              <li>個別アシスタンス</li>
+              <li>プロアクティブ監視</li>
+              <li>コンサルテーションとガイダンス</li>
+              <li>トレーニングとドキュメント</li>
+            </ul>
+          </article>
+        </div>
+
+                <h3 class="services-part"><span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-server"/></svg></span>CPU クラウドサービス</h3><h3 class="subhead">プライベートクラウド サービスカタログ</h3>
+        <p class="section-intro">GPU 計算資源に加えて、RunSun はフル機能のプライベートクラウドを提供します。弾性コンピューティング、コンテナ、ストレージ、ネットワーク、セキュリティ、データベースを、同一プラットフォーム上でご利用いただけます。</p>
+        <div class="card-grid cols-2">
+          <article class="card">
+                        <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-server"/></svg></span>
+            <h3>弾性コンピューティング</h3>
+            <p>プライベートクラウドの日常的な計算基盤です。一般的なワークロード向けの仮想マシン、マシン全体を専有したい場合のベアメタル、HPC と AI ジョブ向けのマネージドサービスを用意しています。イメージ、SSH キー、配置はお客様ご自身で管理でき、1台からクラスタ全体まで拡張できます。</p>
+            <ul class="chips">
+              <li>クラウドホスト（VM）</li>
+              <li>GPU マシン</li>
+              <li>ベアメタル</li>
+              <li>HPC サービス</li>
+              <li>AI コンピューティング</li>
+              <li>プライベートイメージ</li>
+              <li>SSH キー</li>
+              <li>セキュリティグループ</li>
+              <li>プレイスメントグループ</li>
+            </ul>
+          </article>
+          <article class="card">
+                        <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-box"/></svg></span>
+            <h3>コンテナ</h3>
+            <p>コントロールプレーンの運用を自前で抱えることなく、コンテナワークロードを実行できます。ノード管理を省けるサーバーレスな選択肢を含むマネージド Kubernetes と、プライベートなコンテナレジストリで、AI パイプラインからマイクロサービスまで対応します。</p>
+            <ul class="chips">
+              <li>コンテナサービス</li>
+              <li>サーバーレス Kubernetes</li>
+              <li>コンテナレジストリ</li>
+            </ul>
+          </article>
+          <article class="card">
+                        <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-db"/></svg></span>
+            <h3>クラウドストレージ</h3>
+            <p>データの温度ごとに選べるストレージです。稼働中ワークロード向けの高速ブロック／SSD、共有データセットやモデル成果物向けのファイルストレージと S3 互換 API のオブジェクトストレージ、滅多に触らないが保管が必要なデータ向けの低コストアーカイブを、バックアップと CDN 配信まで同一プラットフォームで提供します。</p>
+            <ul class="chips">
+              <li>ブロックストレージ</li>
+              <li>SSD ストレージ</li>
+              <li>ファイルストレージ（NAS）</li>
+              <li>オブジェクトストレージ</li>
+              <li>アーカイブストレージ</li>
+              <li>クラウドバックアップ</li>
+              <li>CDN</li>
+            </ul>
+          </article>
+          <article class="card">
+                        <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-nodes"/></svg></span>
+            <h3>ネットワークと相互接続</h3>
+            <p>RunSun 内に専用の仮想ネットワークを持ち、到達するためのゲートウェイとアドレスを用意します。さらに VPN、専用線、クラウドエクスプレス接続でお客様のデータセンターや他のクラウドとプライベートに接続し、GPU 計算資源を自社ネットワークの一部のように扱えます。</p>
+            <ul class="chips">
+              <li>VPC</li>
+              <li>NAT ゲートウェイ</li>
+              <li>Elastic IP</li>
+              <li>ロードバランサー</li>
+              <li>DNS</li>
+              <li>IPv6 ゲートウェイ</li>
+              <li>共有帯域</li>
+              <li>VPN 接続</li>
+              <li>専用線</li>
+              <li>クラウドエクスプレス接続</li>
+            </ul>
+          </article>
+          <article class="card">
+                        <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-shield"/></svg></span>
+            <h3>セキュリティ</h3>
+            <p>後付けではなく、プラットフォームの周囲に層として備えた保護です。エッジでの基本保護とフォートレスゲートウェイ、攻撃への侵入防止と DDoS ブラックホール、ワークロードとデータベースを監査可能に保つスキャンと監査サービスを組み合わせます。</p>
+            <ul class="chips">
+              <li>基本保護</li>
+              <li>フォートレスゲートウェイ</li>
+              <li>Web アプリケーションファイアウォール</li>
+              <li>侵入防止（IPS）</li>
+              <li>DDoS ブラックホール</li>
+              <li>脆弱性スキャン</li>
+              <li>データベース監査</li>
+              <li>エッジセキュリティ</li>
+            </ul>
+          </article>
+          <article class="card">
+                        <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ic-db"/></svg></span>
+            <h3>データベース</h3>
+            <p>アプリケーションチームが自前で運用しなくて済むマネージドデータベースです。トランザクション向けのリレーショナルデータベース、インメモリで高速な Redis、自動バックアップとリカバリを用意します。</p>
+            <ul class="chips">
+              <li>リレーショナルデータベース</li>
+              <li>Redis</li>
+              <li>データベースバックアップ</li>
+            </ul>
+          </article>
+        </div>
+
+                <h3 class="subhead">RunSun AIDC プラットフォーム ― フルスタック</h3>
+        <p class="section-intro">GPU クラスタとストレージから、モデル、業界アプリケーションまで、4つのレイヤーを1つのプラットフォームで提供します。下図はプラットフォーム自体のフルスタック構成図です。</p>
+        <figure class="stack-figure">
+          <img src="assets/fullstack-diagram.png" alt="RunSun AIDC プラットフォームのフルスタック構成図：SaaS（業界・商用アプリケーション）、MaaS（AI モデル・ワークフロー管理）、PaaS（AI フレームワーク、AI Cluster、AI コンパイラ、課金・IAM・監視）、IaaS（GPU クラスタ、ベアメタル、階層型ストレージ）" loading="lazy">
+        </figure>
+        <p class="stack-guide">下から読む構成です。<strong>IaaS</strong> は物理的な基盤 ― GPU クラスタ、ベアメタル、階層型のファイル／オブジェクト／ベクトルストレージ。<strong>PaaS</strong> はそれを稼働させ続けます ― Kubernetes と HPC スケジューリングを備えた AI Cluster、Operator 群とコンパイラのツールチェーン、課金・IAM・監視。<strong>MaaS</strong> はモデルを働かせます ― 主要なオープンソースフレームワークの上でのモデル・ワークフロー管理。<strong>SaaS</strong> は到達点 ― ユーザーが実際に触れる業界・商用アプリケーションです。1つのスタックを1つのプラットフォームとして、1ノードから数千ノードまで管理します。</p>
+
+        <h3 class="subhead">プラットフォームの使い方</h3>
+        <p class="section-intro">チームの最初のログインから、学習済みモデルと稼働する推論まで ― すべてのワークロードが RunSun でたどる道筋です。</p>
+        <div class="flow-diagram">
+          <div class="flow-step">
+            <span class="flow-num">1</span>
+            <h4>お客様のチームとアプリケーション</h4>
+            <p>エンジニア、研究者、そして彼らが作るアプリケーション ― プラットフォームが支える人とワークロードです。</p>
+          </div>
+          <div class="flow-arrow" aria-hidden="true">&rarr;</div>
+          <div class="flow-step">
+            <span class="flow-num">2</span>
+            <h4>コンソールと API によるアクセス</h4>
+            <p>1つのコンソールと API で、クラスタの払い出し、イメージとキーの管理、ジョブの起動を行います。</p>
+          </div>
+          <div class="flow-arrow" aria-hidden="true">&rarr;</div>
+          <div class="flow-step">
+            <span class="flow-num">3</span>
+            <h4>プラットフォームサービス</h4>
+            <p>IAM、課金、監視が土台として動き、Kubernetes と HPC（Slurm）がすべてのジョブをスケジューリングします。</p>
+          </div>
+          <div class="flow-arrow" aria-hidden="true">&rarr;</div>
+          <div class="flow-step">
+            <span class="flow-num">4</span>
+            <h4>GPU クラスタ</h4>
+            <p>ジョブは RunSun の GPU クラスタ ― Vera Rubin、B300、H200 ― で実行されます。</p>
+          </div>
+          <div class="flow-arrow" aria-hidden="true">&rarr;</div>
+          <div class="flow-step">
+            <span class="flow-num">5</span>
+            <h4>学習と推論のアウトプット</h4>
+            <p>学習済みモデル、提供される推論、レンダリング結果が、お客様のプロダクトとユーザーへ届きます。</p>
+          </div>
+        </div>
+            </div>
+    </section>
+
+<!-- How it works -->
+    <section class="section" id="how-it-works">
+      <div class="wrap">
+        <h2>ご利用の流れ</h2>
+        <p class="section-intro">お問い合わせから稼働開始まで、3つのステップで進みます。</p>
+        <div class="card-grid cols-3 steps">
+          <article class="card">
+            <span class="step-no">1</span>
+            <h3>ご要件をお聞かせください</h3>
+            <p>ご希望のGPUモデル、規模、ワークロードの概要を、下記のフォームからお送りください。</p>
+          </article>
+          <article class="card">
+            <span class="step-no">2</span>
+            <h3>構成とお見積もりのご確認</h3>
+            <p>ご要件に合わせた構成とお見積もりをご提示します。安定した需要には Reserved、柔軟性には On-demand をご用意します。</p>
+          </article>
+          <article class="card">
+            <span class="step-no">3</span>
+            <h3>ご契約・導入・稼働開始</h3>
+            <p>ご契約後、容量を準備・導入し、RunSun 上でワークロードの稼働を開始します。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Token Engine -->
+    <section class="section token-section" id="token">
+      <div class="wrap">
+        <div class="token-grid">
+          <div>
+            <span class="badge">Token Engine・rstoken.ai</span>
+            <h2>GPU計算力からトークン供給へ ― Token Engine</h2>
+            <p class="section-intro">RunSun の GPU 計算資源の上位には、LLM トークンの統合ゲートウェイ兼マーケットプレイス Token Engine があります。</p>
+            <ul class="tick-list">
+              <li>OpenAI 互換の 1 つの API で、多数のモデルとプロバイダーにアクセス</li>
+              <li>ルーティング、計測、価格設定、精算はプラットフォームが担当</li>
+              <li>プリペイド方式で、使用したトークン分だけお支払い</li>
+              <li>リセラー・パートナー向けのコミッションプログラムあり</li>
+            </ul>
+            <div class="btn-group">
+              <a class="btn btn-primary" href="https://www.rstoken.ai" target="_blank" rel="noopener">Token Engine を見る →</a>
+            </div>
+          </div>
+          <div class="layer-stack">
+            <div class="api-base"><span>API ベース URL</span><code>https://api.rstoken.ai/v1</code></div>
+            <div class="layer layer-token"><strong>Token Engine</strong><span>ルーティング・計測・価格設定・精算</span></div>
+            <div class="layer"><strong>RunSun GPU 計算資源</strong><span>Vera Rubin、B300、H200 ほか</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="section section-alt" id="pricing">
+      <div class="wrap">
+        <h2>料金</h2>
+        <div class="table-scroll" tabindex="0" role="region" aria-label="GPU 料金表">
+          <table class="price-table">
+            <thead>
+              <tr>
+                <th scope="col">モデル</th>
+                <th scope="col">状態</th>
+                <th scope="col">On-demand（GPU 1基/時間）</th>
+                <th scope="col">Reserved 12か月（GPU 1基/時間）</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">NVIDIA B300</th><td class="status-cell"><span class="status-tag status-available">提供中</span></td><td>$8.90</td><td>$5.90</td></tr>
+              <tr><th scope="row">NVIDIA H200</th><td class="status-cell"><span class="status-tag status-available">提供中</span></td><td>$4.90</td><td>$3.90</td></tr>
+              <tr><th scope="row">NVIDIA Vera Rubin</th><td class="status-cell"><span class="status-tag status-reserve">予約受付中</span></td><td colspan="2">2027年Q2提供開始（価格は未定）</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="footnote">価格はすべてUSD建て、GPU 1基あたり1時間の料金（税別）。Reserved は12か月契約時の料金です。</p>
+      </div>
+    </section>
+
+    <!-- Regions -->
+    <section class="section" id="regions">
+      <div class="wrap">
+        <h2>日本を拠点とする GPU インフラ</h2>
+        <p class="section-intro">日本で提供中です。東京の日本法人が窓口となり、日本語でサポートします。</p>
+        <div class="card-grid cols-2">
+          <article class="card has-map">
+            <span class="region-map map-tall invert" style="background-image:url(assets/map-japan.png)" aria-hidden="true"></span>
+            <h3>日本 <span class="status status-live">提供中</span></h3>
+            <ul class="tick-list">
+              <li>専用ベアメタル GPU クラスタ</li>
+              <li>ノンブロッキング 400 Gb/s InfiniBand NDR ファブリック</li>
+              <li>テナント分離</li>
+              <li>SLA 付き Reserved 供給</li>
+            </ul>
+            <p class="addr">RUNSUN CLOUD AI 株式会社<br>東京都千代田区丸の内二丁目5番2号三菱ビル９階</p>
+          </article>
+          <article class="card">
+            <h3>グローバル拠点</h3>
+            <p>シンガポール（本社）、アメリカ、タイの各拠点も稼働しており、同一プラットフォーム・同一契約でご利用いただけます。英語圏のお客様は英語サイトをご覧ください。</p>
+            <p class="addr"><a href="https://www.runsuncloud.com/">runsuncloud.com →</a></p>
+          </article>
+        </div>
+        <div class="card-grid cols-3">
+          <article class="card">
+            <h3>業界ソリューション</h3>
+            <p>8つの業界が RunSun の計算資源を活用しています。対象のお客様と用途は、上記の<a href="#industries">業界ソリューション</a>セクションをご覧ください。</p>
+          </article>
+          <article class="card">
+            <h3>再生可能エネルギーのデータセンター</h3>
+            <p>再生可能エネルギーを活用したデータセンターで GPU 計算資源を運用します。</p>
+          </article>
+          <article class="card">
+            <h3>コンプライアンス重視のデータ管理</h3>
+            <p>コンプライアンスを重視したデータ管理で、お客様のデータを取り扱います。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="section section-alt" id="contact">
+      <div class="wrap">
+        <div class="contact-panel">
+          <h2>お問い合わせ</h2>
+          <p class="section-intro">Reserved の計算資源、B300・H200 の提供状況、Vera Rubin のご予約について、お気軽にご相談ください。</p>
+          <form class="enquiry-form" id="enquiry-form" action="mailto:info@runsuncloudai.jp" method="post" enctype="text/plain" data-to="info@runsuncloudai.jp" data-subject="ウェブサイトからのお問い合わせ">
+            <div class="form-grid">
+              <label>お名前 <span class="req" aria-hidden="true">*</span>
+                <input type="text" name="name" autocomplete="name" required>
+              </label>
+              <label>会社名
+                <input type="text" name="company" autocomplete="organization">
+              </label>
+              <label>メールアドレス <span class="req" aria-hidden="true">*</span>
+                <input type="email" name="email" autocomplete="email" required>
+              </label>
+              <label>ご希望の製品
+                <select name="product" id="enquiry-product">
+                  <option value="NVIDIA B300">NVIDIA B300</option>
+                  <option value="NVIDIA H200">NVIDIA H200</option>
+                  <option value="NVIDIA Vera Rubin（予約）">NVIDIA Vera Rubin（予約）</option>
+                  <option value="Token Engine">Token Engine</option>
+                  <option value="その他・未定">その他・未定</option>
+                </select>
+              </label>
+              <label>ご希望の規模
+                <input type="text" name="scale" placeholder="例：GPU 64基、B300 ノード 1台">
+              </label>
+              <label class="form-wide">お問い合わせ内容
+                <textarea name="message" rows="5" placeholder="ワークロード、時期、リージョンなど、構成の検討に役立つ情報をご記入ください。"></textarea>
+              </label>
+            </div>
+            <button class="btn btn-primary" type="submit">送信する</button>
+            <p class="form-note">送信ボタンを押すと、入力内容を記入したメールが info@runsuncloudai.jp 宛てで、お使いのメールアプリで開きます。メールアプリ側で送信するまで、実際には送信されません。直接メールされる場合は <a href="mailto:info@runsuncloudai.jp">info@runsuncloudai.jp</a> へどうぞ。</p>
+          </form>
+          <p class="footnote">RUNSUN CLOUD AI 株式会社 · 東京都千代田区丸の内二丁目5番2号三菱ビル９階</p>
+        
+        <article class="company-block card-grid">
+          <div>
+            <h3>RUNSUN CLOUD AI株式会社</h3>
+            <p class="company-label">COMPANY</p>
+            <table class="company-table">
+              <tbody>
+                <tr><th scope="row">商号</th><td>RUNSUN CLOUD AI株式会社</td></tr>
+                <tr><th scope="row">本社所在地</th><td>東京都千代田区丸の内二丁目5番2号三菱ビル９階</td></tr>
+                <tr><th scope="row">代表者</th><td>黒木 明</td></tr>
+                <tr><th scope="row">設立</th><td>2025年1月30日</td></tr>
+                <tr><th scope="row">資本金</th><td>1,000万円</td></tr>
+                <tr><th scope="row">事業内容</th><td>1.クラウドインフラの設計、構築、運用管理　2.クラウドプラットフォームの販売及び導入支援　3.クラウド移行サービス及びクラウドネイティブアプリケーションの開発　4.AIアルゴリズムとモデルの開発　5.データ分析及び機械学習モデルの構築と運用　6.AIを活用した自動化及び最適化ソリューションの提供　7.ハイパフォーマンスコンピューティング（HPC）サービスの提供　8.エッジコンピューティング及び分散コンピューティングの導入　9.コンピュータネットワークとデータセンターの設計及び管理　10.ITインフラの評価と最適化のコンサルティング　11.サイバーセキュリティ対策とリスク管理　12.システムインテグレーション及びプロジェクト管理サービス　13.BtoB及びBtoCの販売戦略策定と実行　14.デジタルマーケティング及びブランディング　15.顧客サポートとアフターサービスの提供　16.前各号に附帯する一切の業務</td></tr>
+              </tbody>
+            </table>
+            <p class="company-label company-contact">CONTACT</p>
+            <p><a href="mailto:info@runsuncloudai.jp">info@runsuncloudai.jp</a></p>
+            <p>東京都千代田区丸の内二丁目5番2号三菱ビル９階</p>
+          </div>
+        </article>
+</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <a class="logo" href="#top"><img class="brand-logo" src="assets/runsun-logo.png" alt="RunSun"></a>
+          <p class="footer-tag">NVIDIA Vera Rubin・B300・H200 を中心とした GPU クラウドと、その上位の Token Engine。</p>
+        </div>
+        <nav class="footer-nav" aria-label="Footer">
+          <ul>
+            <li><a href="#about">特長</a></li>
+            <li><a href="#industries">業界ソリューション</a></li>
+            <li><a href="#gpus">GPU</a></li>
+            <li><a href="#services">サービス</a></li>
+            <li><a href="#token">Token Engine</a></li>
+            <li><a href="#pricing">料金</a></li>
+            <li><a href="#regions">リージョン</a></li>
+            <li><a href="#contact">お問い合わせ</a></li>
+          </ul>
+        </nav>
+        <div class="footer-side">
+          <a class="btn btn-primary" href="https://www.rstoken.ai" target="_blank" rel="noopener">Token Engine を見る →</a>
+          <div class="social-row">
+            <a class="social-link" href="https://www.linkedin.com/company/runsun-cloud-ai" target="_blank" rel="noopener" aria-label="Runsun Cloud AI on LinkedIn">in</a>
+            <a class="locale-link" href="https://www.runsuncloud.com/" lang="en" hreflang="en">English site</a>
+          </div>
+        </div>
+      </div>
+      <p class="footer-legal">© 2026 RunSun. RUNSUN CLOUD AI株式会社</p>
+    </div>
+  </footer>
+</body>
+</html>
