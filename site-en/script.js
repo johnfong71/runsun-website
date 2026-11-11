@@ -118,8 +118,8 @@
 
     function restart() {
       clearInterval(timer);
-      if (REDUCED) {
-        return; /* no autoplay for reduced-motion visitors; dots still work */
+      if (REDUCED || root.classList.contains('user-paused') || root.classList.contains('keyboard-paused')) {
+        return; /* user preference and manual pause take precedence */
       }
       timer = setInterval(next, 4500);
     }
@@ -128,6 +128,7 @@
       clearInterval(timer);
     });
     root.addEventListener('mouseleave', restart);
+    root.addEventListener('carousel-state-change', restart);
     restart();
   }
 
@@ -547,4 +548,22 @@
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initLightFlow);
   } else { initLightFlow(); }
+})();
+
+
+/* Additional user control for rotating hero. */
+(function(){
+ const carousel=document.getElementById('hero-carousel'),btn=document.getElementById('carousel-pause');
+ if(!carousel||!btn)return;
+ let paused=false;
+ const update=()=>carousel.dispatchEvent(new Event('carousel-state-change'));
+ btn.addEventListener('click',()=>{
+   paused=!paused;btn.setAttribute('aria-pressed',String(paused));
+   btn.textContent=paused?'Resume slideshow':'Pause slideshow';
+   carousel.classList.toggle('user-paused',paused);update();
+ });
+ carousel.addEventListener('focusin',()=>{carousel.classList.add('keyboard-paused');update();});
+ carousel.addEventListener('focusout',e=>{
+   if(!carousel.contains(e.relatedTarget)){carousel.classList.remove('keyboard-paused');update();}
+ });
 })();

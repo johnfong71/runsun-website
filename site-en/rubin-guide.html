@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Vera Rubin Architecture Guide | RunSun Cloud</title>
+<meta content="Technical reference to NVIDIA Vera Rubin architecture, performance context and RunSun future-capacity roadmap." name="description"/>
+<link href="style.css" rel="stylesheet"/>
+<script>
+    /* Enable the motion layer only when the visitor has not asked for
+       reduced motion; script.js reveals the elements this class hides. */
+    if (window.matchMedia && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('motion-ok');
+    }
+  </script>
+<script defer="" src="script.js"></script>
+<meta content="RunSun Cloud | NVIDIA GPU Cloud &amp; Dedicated AI Factories" property="og:title"/><meta content="Dedicated NVIDIA GPU infrastructure for training, post-training and inference." property="og:description"/><meta content="website" property="og:type"/><meta content="#081a37" name="theme-color"/></head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute" width="0">
+<defs>
+<symbol id="ic-gpu" viewbox="0 0 24 24"><rect height="11" rx="2" width="11" x="6.5" y="6.5"></rect><rect height="3.6" rx="0.8" width="3.6" x="10.2" y="10.2"></rect><path d="M9.5 6.5V3.5M14.5 6.5V3.5M9.5 20.5v-3M14.5 20.5v-3M6.5 9.5H3.5M6.5 14.5H3.5M20.5 9.5h-3M20.5 14.5h-3"></path></symbol>
+<symbol id="ic-calendar" viewbox="0 0 24 24"><rect height="16" rx="2" width="17" x="3.5" y="5"></rect><path d="M3.5 10h17M8 3v4M16 3v4M7.5 14.5h3M7.5 17.5h5"></path></symbol>
+<symbol id="ic-bolt" viewbox="0 0 24 24"><path d="M13 2.5 4.5 14H11l-1 7.5L18.5 10H12z"></path></symbol>
+<symbol id="ic-cloud" viewbox="0 0 24 24"><path d="M7 18.5h9.5a4.5 4.5 0 0 0 .9-8.85A6 6 0 0 0 5.7 11.1 3.8 3.8 0 0 0 7 18.5z"></path></symbol>
+<symbol id="ic-box" viewbox="0 0 24 24"><path d="M12 3 21 7.5v9L12 21l-9-4.5v-9z"></path><path d="M3 7.5 12 12l9-4.5M12 12v9"></path></symbol>
+<symbol id="ic-db" viewbox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="7.5" ry="2.8"></ellipse><path d="M4.5 5.5v13c0 1.55 3.36 2.8 7.5 2.8s7.5-1.25 7.5-2.8v-13"></path><path d="M4.5 12c0 1.55 3.36 2.8 7.5 2.8s7.5-1.25 7.5-2.8"></path></symbol>
+<symbol id="ic-db-fast" viewbox="0 0 24 24"><ellipse cx="10.5" cy="5.3" rx="7" ry="2.6"></ellipse><path d="M3.5 5.3v13c0 1.5 3.13 2.7 7 2.7 1.15 0 2.24-.1 3.2-.3"></path><path d="M18.3 11.4 15 16.4h2.6l-2 4.4 4.9-5.9h-2.7z"></path></symbol>
+<symbol id="ic-layers" viewbox="0 0 24 24"><path d="M12 3.5 21.5 8 12 12.5 2.5 8z"></path><path d="M3.5 12.2 12 16.4l8.5-4.2"></path><path d="M3.5 16 12 20.2 20.5 16"></path></symbol>
+<symbol id="ic-nodes" viewbox="0 0 24 24"><circle cx="12" cy="12" r="2.4"></circle><circle cx="4.5" cy="5.5" r="1.9"></circle><circle cx="19.5" cy="5.5" r="1.9"></circle><circle cx="5" cy="19" r="1.9"></circle><circle cx="19" cy="19" r="1.9"></circle><path d="M10.2 10.2 6 7M13.8 10.2 18 7M10.3 13.9l-3.5 3.5M13.7 13.9l3.5 3.5"></path></symbol>
+<symbol id="ic-route" viewbox="0 0 24 24"><circle cx="5" cy="19" r="2.2"></circle><circle cx="19" cy="5" r="2.2"></circle><path d="M7.2 19H15a2 2 0 0 0 2-2V7.2"></path></symbol>
+<symbol id="ic-swap" viewbox="0 0 24 24"><path d="M3.5 8h13M13.5 4l4 4-4 4"></path><path d="M20.5 16h-13M10.5 12l-4 4 4 4"></path></symbol>
+<symbol id="ic-pin" viewbox="0 0 24 24"><path d="M12 21.2S4.8 15.6 4.8 9.6a7.2 7.2 0 1 1 14.4 0c0 6-7.2 11.6-7.2 11.6z"></path><circle cx="12" cy="9.6" r="2.6"></circle></symbol>
+<symbol id="ic-grid" viewbox="0 0 24 24"><rect height="7" rx="1.5" width="7" x="3.5" y="3.5"></rect><rect height="7" rx="1.5" width="7" x="13.5" y="3.5"></rect><rect height="7" rx="1.5" width="7" x="3.5" y="13.5"></rect><rect height="7" rx="1.5" width="7" x="13.5" y="13.5"></rect></symbol>
+<symbol id="ic-headset" viewbox="0 0 24 24"><path d="M4.5 15v-2.5a7.5 7.5 0 0 1 15 0V15"></path><rect height="6" rx="1.8" width="4" x="3" y="14.5"></rect><rect height="6" rx="1.8" width="4" x="17" y="14.5"></rect><path d="M19.5 20.5c0 1.7-1.8 2.5-4 2.5h-2"></path></symbol>
+<symbol id="ic-server" viewbox="0 0 24 24"><rect height="7" rx="1.8" width="17" x="3.5" y="4"></rect><rect height="7" rx="1.8" width="17" x="3.5" y="13"></rect><path d="M6.8 7.5h.01M6.8 16.5h.01"></path></symbol>
+<symbol id="ic-shield" viewbox="0 0 24 24"><path d="M12 3 5 5.6v5.2c0 4.6 3 8.4 7 10.2 4-1.8 7-5.6 7-10.2V5.6z"></path><path d="M8.8 11.6 11 13.8l4.2-4.4"></path></symbol>
+<symbol id="ic-cycle" viewbox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 0 1-12.6 5.6M4.5 12a7.5 7.5 0 0 1 12.6-5.6"></path><path d="M17.6 2.8v3.6h-3.6M6.4 21.2v-3.6h3.6"></path></symbol>
+<symbol id="ic-globe" viewbox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><path d="M3.5 12h17M12 3.5c2.5 2.4 3.7 5.2 3.7 8.5s-1.2 6.1-3.7 8.5c-2.5-2.4-3.7-5.2-3.7-8.5s1.2-6.1 3.7-8.5"></path></symbol>
+<symbol id="ic-factory" viewbox="0 0 24 24"><path d="M3 21V10.5l6 4v-4l6 4V6.5h6V21"></path><path d="M2.5 21h19M6.8 17.8h.01M11 17.8h.01M15.2 17.8h.01"></path></symbol>
+</defs>
+</svg>
+<header class="site-header">
+<div class="wrap header-inner">
+<a class="logo" href="index.html#top"><img alt="RunSun" class="brand-logo" src="assets/runsun-logo.png"/></a>
+<button aria-controls="site-nav" aria-expanded="false" class="menu-toggle" type="button">Menu</button>
+<nav aria-label="Main" class="site-nav" id="site-nav">
+<ul>
+<li><a href="index.html#about">About</a></li>
+<li><a href="index.html#industries">Industries</a></li>
+<li><a href="index.html#gpus">GPUs</a></li>
+<li><a href="index.html#services">Services</a></li>
+<li><a href="index.html#token">Token</a></li>
+<li><a href="index.html#pricing">Pricing</a></li>
+<li><a href="index.html#regions">Regions</a></li>
+<li><a href="index.html#contact">Contact</a></li>
+</ul>
+</nav>
+<a class="locale-link" href="https://www.runsuncloud.jp/" hreflang="ja" lang="ja">日本語</a>
+</div>
+</header>
+<main id="main"><section class="section guide-intro"><div class="wrap"><h1>Vera Rubin Architecture Guide</h1><p class="section-intro">NVIDIA technology reference and RunSun roadmap. Product performance values are vendor reference figures, not RunSun service-level guarantees. RunSun targets Q2 2027 for customer delivery, subject to confirmation.</p><a class="cta" href="index.html#contact">Discuss future capacity</a>   <a href="index.html#flagship">Back to GPU Cloud</a></div></section><section class="section" id="gpus">
+<div class="wrap">
+<div class="rubin-panel">
+<div>
+<span class="badge">Flagship · Now open for reservations</span>
+<h2>NVIDIA Vera Rubin</h2>
+<p class="section-intro">Our next-generation flagship is now open for reservations, with availability in Q2 2027. Run on B300 and GB300 NVL72 today, with a migration path to Vera Rubin when it comes online.</p>
+<div class="btn-group">
+<a class="btn btn-primary" data-product="NVIDIA Vera Rubin (reservation)" href="index.html#contact">Reserve Vera Rubin</a>
+</div>
+</div>
+<ul class="tick-list">
+<li>Rubin GPU with HBM4</li>
+<li>Vera CPU</li>
+<li>NVLink 6</li>
+<li>Migration path from B300/GB300</li>
+</ul>
+</div>
+<div class="vr">
+<!-- ============ OVERVIEW ============ -->
+<div class="vr-hero">
+<div class="wrap">
+<div class="vr-hero-top">
+<div class="vr-hero-copy">
+<span class="eyebrow">Flagship · Now Open for Reservations</span>
+<h3>NVIDIA Vera Rubin NVL72,<br/><span class="accent">taken apart piece by piece.</span></h3>
+<p class="lede">Vera Rubin NVL72 is NVIDIA’s next-generation rack-scale AI supercomputer: 72 Rubin GPUs and 36 Vera CPUs wired into a single giant GPU by sixth-generation NVLink. This page walks through the hardware the way it is built — chip, tray, spine, power and cooling — using NVIDIA’s own imagery and published specifications, with ecosystem-partner hardware credited where NVIDIA publishes none of its own. Two of the platform’s six chips are networking silicon — the ConnectX-9 SuperNIC and the BlueField-4 DPU — and they get their own section below (06).</p>
+</div>
+<figure>
+<img alt="The full NVIDIA Vera Rubin NVL72 rack with 18 compute trays and 9 NVLink switch trays" src="assets/vera-rubin-nvl72-rack.jpg"/>
+<figcaption>Image: NVIDIA — the Vera Rubin NVL72 rack. Source: <a href="https://www.nvidia.com/en-us/data-center/vera-rubin-nvl72/">NVIDIA Vera Rubin NVL72 product page</a> (nvidia.com).</figcaption>
+</figure>
+</div>
+<div class="stats">
+<div class="stat"><div class="num">3,600 PFLOPS</div><div class="lbl">NVFP4 inference per rack</div></div>
+<div class="stat"><div class="num">72 + 36</div><div class="lbl">Rubin GPUs + Vera CPUs in one rack</div></div>
+<div class="stat"><div class="num">20.7 TB</div><div class="lbl">HBM4 memory per rack</div></div>
+<div class="stat"><div class="num">10x</div><div class="lbl">more tokens per megawatt vs. GB200 NVL72</div></div>
+<div class="stat"><div class="num">1/10</div><div class="lbl">cost per million tokens vs. GB200 NVL72</div></div>
+</div>
+<div class="cta-row">
+<a class="btn" data-product="NVIDIA Vera Rubin (reservation)" href="index.html#contact">Reserve Vera Rubin</a>
+<span class="cta-note">Now open for reservations — <strong>available in Q2 2027</strong>.</span>
+</div>
+<p class="src">Performance figures: NVIDIA Vera Rubin NVL72 product page and NVIDIA GTC 2026 press release (March 16, 2026). NVIDIA describes its published specifications as preliminary and subject to change.</p>
+</div>
+</div>
+<!-- ============ 1. RUBIN GPU ============ -->
+<section class="part">
+<div class="wrap part-grid">
+<figure class="shot">
+<img alt="NVIDIA Rubin GPU product graphic with die visualization and key specifications" src="assets/rubin-gpu.png"/>
+<figcaption>Image: NVIDIA — the Rubin GPU. Source: NVIDIA Technical Blog, “<a href="https://developer.nvidia.com/blog/inside-the-nvidia-rubin-platform-six-new-chips-one-ai-supercomputer/">Inside the NVIDIA Rubin Platform</a>” (Figure 7).</figcaption>
+</figure>
+<div>
+<h5 class="sub">The Silicon</h5>
+<h4><span class="no">01</span>The Rubin GPU</h4>
+<p>The Rubin GPU is the execution engine of the platform. Two reticle-limited compute dies are joined on a single package and flanked by HBM4 memory stacks, giving one GPU 336 billion transistors — 1.6x the transistor count of Blackwell. Its third-generation Transformer Engine is built for low-precision NVFP4 execution, the format that agentic and reasoning workloads now run on.</p>
+<ul class="specs">
+<li><b>50 PFLOPS</b> <span>NVFP4 inference ·</span> <b>35 PFLOPS</b> <span>NVFP4 training, per GPU</span></li>
+<li><b>288 GB HBM4</b> <span>per GPU, at up to</span> <b>22 TB/s</b> <span>memory bandwidth (≈2.8x Blackwell)</span></li>
+<li><b>3.6 TB/s</b> <span>NVLink 6 bandwidth per GPU (2x the prior generation)</span></li>
+<li><b>Up to 5x inference</b> <span>and</span> <b>3.5x training</b> <span>performance vs. Blackwell, per NVIDIA</span></li>
+</ul>
+<p class="src">Source: NVIDIA Technical Blog, “Inside the NVIDIA Rubin Platform” (Rubin GPU section and Figure 7).</p>
+</div>
+</div>
+</section>
+<!-- ============ 2. VERA CPU ============ -->
+<section class="part">
+<div class="wrap part-grid flip">
+<figure class="shot">
+<img alt="NVIDIA Vera CPU product graphic with package close-up and architectural features" src="assets/vera-cpu.webp"/>
+<figcaption>Image: NVIDIA — the Vera CPU. Source: NVIDIA Technical Blog, “<a href="https://developer.nvidia.com/blog/inside-the-nvidia-rubin-platform-six-new-chips-one-ai-supercomputer/">Inside the NVIDIA Rubin Platform</a>” (Figure 5).</figcaption>
+</figure>
+<div>
+<h5 class="sub">The Host Processor</h5>
+<h4><span class="no">02</span>The Vera CPU</h4>
+<p>Beside every pair of Rubin GPUs sits a Vera CPU, NVIDIA’s first custom Arm-compatible host processor for AI factories. Vera is not a passive host: it is the data-movement and orchestration engine that keeps the GPUs fed, with coherent access to GPU memory over NVLink-C2C. Its system memory uses pluggable SOCAMM LPDDR5X modules, designed for fast in-field service.</p>
+<ul class="specs">
+<li><b>88 Olympus cores</b> <span>custom NVIDIA cores,</span> <b>176 threads</b> <span>via Spatial Multithreading</span></li>
+<li><b>Up to 1.5 TB LPDDR5X</b> <span>per superchip, at up to</span> <b>1.2 TB/s</b></li>
+<li><b>1.8 TB/s NVLink-C2C</b> <span>coherent CPU–GPU bandwidth (2x Grace)</span></li>
+</ul>
+<p class="src">Source: NVIDIA Technical Blog, “Inside the NVIDIA Rubin Platform” (Vera CPU section and Table 1).</p>
+</div>
+</div>
+</section>
+<!-- ============ 3. COMPUTE TRAY ============ -->
+<section class="part">
+<div class="wrap part-grid">
+<figure class="shot">
+<img alt="Top view of the NVIDIA DGX Vera Rubin compute tray with callouts identifying the two Vera CPUs, four Rubin GPUs, 16x SOCAMM modules, internal liquid-cooling manifold, bus bar connector, Connect-X 9 bays, BlueField-4 and power distribution board, plus the cold water inlet and hot water outlet" src="assets/compute-tray.webp"/>
+<figcaption>Image: NVIDIA — annotated top view of the DGX Vera Rubin compute tray. Source: NVIDIA DGX Vera Rubin NVL72 User Guide, “<a href="https://docs.nvidia.com/dgx/dgxvr-user-guide/hardware.html">Hardware</a>” (docs.nvidia.com).</figcaption>
+</figure>
+<div>
+<h5 class="sub">The Building Block</h5>
+<h4><span class="no">03</span>The Compute Tray</h4>
+<p>Each 1U compute tray carries two Vera Rubin Superchips — two Vera CPUs and four Rubin GPUs — distributed across a printed-circuit-board midplane. Because every connection runs through the midplane, the tray itself is completely cable-free, hose-free and fanless: it slides into the rack and mates with power, cooling and the NVLink spine in one motion. The front bays hold the tray's four ConnectX-9 SuperNICs — one for each GPU — and two BlueField-4 DPUs.</p>
+<ul class="specs">
+<li><b>200 PFLOPS</b> <span>NVFP4 AI performance per tray</span></li>
+<li><b>14.4 TB/s</b> <span>NVLink 6 bandwidth per tray</span></li>
+<li><b>≈5 minutes</b> <span>tray assembly time, down from nearly two hours on Grace Blackwell trays</span></li>
+<li><b>100% liquid-cooled</b> <span>cold plates on CPUs and GPUs; no fans anywhere in the tray</span></li>
+</ul>
+<p class="src">Sources: NVIDIA Technical Blog (Figure 3); NVIDIA Developer Blog, “NVIDIA Vera Rubin POD” (compute tray section).</p>
+</div>
+</div>
+</section>
+<!-- ============ 4. RACK ANATOMY / EXPLODED ============ -->
+<section class="part">
+<div class="wrap part-grid flip widefig-r">
+<figure class="shot">
+<img alt="Annotated top view of the NVIDIA DGX Vera Rubin NVLink switch tray, showing the four NVLink switches with liquid-cooling cold plates, power connector and water inlet and outlet" src="assets/nvlink-switch-tray.webp"/>
+<figcaption>Image: NVIDIA — top view of the DGX Vera Rubin NVLink switch tray, showing the four NVLink switches under their liquid-cooling cold plates, one of the rack’s modular layers. Source: NVIDIA DGX Vera Rubin NVL72 User Guide, “<a href="https://docs.nvidia.com/dgx/dgxvr-user-guide/hardware.html">Hardware</a>” (docs.nvidia.com).</figcaption>
+</figure>
+<div>
+<h5 class="sub">Rack Anatomy</h5>
+<h4><span class="no">04</span>One Rack, Modular Layers</h4>
+<p>Pull the NVL72 apart and it separates into field-replaceable layers: 18 compute trays, 9 NVLink switch trays (each carrying four NVLink 6 switch chips, shown here), power shelves at the rack’s base and the NVLink spine at its back — roughly 1.3 million components and about 1,300 chips in a single-wide MGX rack weighing around 4,000 lbs. Every tray is modular and hot-swappable, and the rack keeps operating even while switch trays are serviced or replaced.</p>
+<ul class="specs">
+<li><b>18 compute trays</b> <span>+</span> <b>9 NVLink switch trays</b> <span>per rack</span></li>
+<li><b>≈1.3M components</b> <span>in a single-wide, third-generation MGX rack</span></li>
+<li><b>45°C</b> <span>warm-water inlet temperature for the liquid-cooling loop</span></li>
+</ul>
+<p class="src">Sources: NVIDIA Developer Blog, “NVIDIA Vera Rubin POD”; NVIDIA Vera Rubin NVL72 product page (inlet temperature).</p>
+</div>
+</div>
+</section>
+<!-- ============ 5. NVLINK SPINE & CABLE CARTRIDGES ============ -->
+<section class="part">
+<div class="wrap part-grid widefig">
+<figure class="shot">
+<img alt="NVIDIA MGX rack spine featuring four modular copper cable cartridges" src="assets/mgx-rack-spine.webp"/>
+<figcaption>Image: NVIDIA — the MGX rack spine with its four copper cable cartridges. Source: NVIDIA Developer Blog, “<a href="https://developer.nvidia.com/blog/nvidia-vera-rubin-pod-seven-chips-five-rack-scale-systems-one-ai-supercomputer/">NVIDIA Vera Rubin POD</a>” (Figure 2).</figcaption>
+</figure>
+<div>
+<h5 class="sub">The Nervous System</h5>
+<h4><span class="no">05</span>NVLink Spine &amp; Cable Cartridges</h4>
+<p>At the back of the rack, the NVLink spine is the backplane that turns 72 GPUs into one. It is built from up to four preintegrated, prevalidated copper cable cartridges that plug every tray into a single all-to-all fabric — about 5,000 copper cables, more than two miles of cabling in total, factory-assembled into cartridges so the spine installs as a unit instead of cable by cable.</p>
+<ul class="specs">
+<li><b>4 cable cartridges</b> <span>preintegrated and prevalidated, one modular spine</span></li>
+<li><b>≈5,000 copper cables</b> <span>— over two miles per rack</span></li>
+<li><b>NVLink 6</b> <span>sixth-generation scale-up fabric,</span> <b>3.6 TB/s per GPU</b></li>
+</ul>
+<p class="src">Source: NVIDIA Developer Blog, “NVIDIA Vera Rubin POD” (MGX rack spine and NVLink sections).</p>
+</div>
+</div>
+</section>
+<!-- ============ 6. NETWORKING ============ -->
+<section class="part">
+<div class="wrap">
+<h5 class="sub">Scale-Out Networking</h5>
+<h4><span class="no">06</span>Beyond the Rack: ConnectX-9 &amp; BlueField-4</h4>
+<p class="wide">NVLink 6 (section 05) is the scale-up fabric: it makes the 72 GPUs inside one rack behave as a single machine. Everything past the rack’s edge — rack to rack, pod to pod, site to site — is networking, and Vera Rubin treats it as first-class silicon, not plumbing: two of the platform’s six chips exist only to move and manage data. ConnectX-9 SuperNICs sit at every network endpoint, and two BlueField-4 DPUs in every compute tray run the infrastructure itself. Together with Spectrum-X Ethernet they form the scale-out and scale-across fabric that DGX SuperPOD deployments are built from.</p>
+<div class="part-grid subblock">
+<figure class="shot splitfig fig12fit">
+<img alt="Close-up of the NVIDIA ConnectX-9 chip used in the ConnectX-9 SuperNIC, with callouts for 800 Gb/s per port, programmable RDMA transport and security features" src="assets/connectx-9.png"/>
+<span class="splitview"><img alt="Close-up of the NVIDIA ConnectX-9 chip used in the ConnectX-9 SuperNIC, with callouts for 800 Gb/s per port, programmable RDMA transport and security features" src="assets/connectx-9-p1.png"/><img alt="" src="assets/connectx-9-p2.png"/><img alt="" src="assets/connectx-9-p3.png"/></span>
+<figcaption>Image: NVIDIA — the ConnectX-9 chip at the heart of the ConnectX-9 SuperNIC. Source: NVIDIA Technical Blog, “<a href="https://developer.nvidia.com/blog/inside-the-nvidia-rubin-platform-six-new-chips-one-ai-supercomputer/">Inside the NVIDIA Rubin Platform</a>” (Figure 12).</figcaption>
+</figure>
+<div>
+<h5 class="blocktitle">ConnectX-9 SuperNIC: The Scale-Out Endpoint</h5>
+<p>The front bays of every compute tray hold four ConnectX-9 SuperNIC boards — one board paired with each Rubin GPU — so every Rubin GPU has 1.6 Tb/s of network bandwidth leaving the rack. ConnectX-9 is the intelligent endpoint of the Spectrum-X Ethernet fabric (and pairs with Quantum-X800 InfiniBand where that fabric is chosen). AI traffic is bursty and synchronized — in MoE expert dispatch and collective operations, thousands of GPUs inject data at the same instant — so instead of reacting to congestion after queues build, ConnectX-9 enforces programmable congestion control, traffic shaping and packet scheduling at the endpoint itself, in coordination with the Spectrum-6 switches. It also enforces per-job fairness and isolation, so one tenant’s burst cannot degrade the fabric for everyone else, and its cryptographic engines accelerate encryption for data in motion and at rest without giving up line rate.</p>
+<ul class="specs">
+<li><b>800 Gb/s per port</b> <span>over InfiniBand or Ethernet, with programmable RDMA transport</span></li>
+<li><b>1.6 Tb/s per Rubin GPU</b> <span>of scale-out bandwidth in the NVL72 tray design</span></li>
+<li><b>Four ConnectX-9 SuperNICs per compute tray</b> <span>one paired with each Rubin GPU</span></li>
+<li><b>Endpoint congestion control</b> <span>programmable congestion control, traffic shaping and packet scheduling, coordinated with Spectrum-6 switches</span></li>
+<li><b>Isolation &amp; security at the endpoint</b> <span>per-tenant fairness, IPsec and PSP encryption acceleration, secure boot and device attestation</span></li>
+</ul>
+<p class="src">Sources: NVIDIA Technical Blog, “Inside the NVIDIA Rubin Platform” (ConnectX-9 section and Figure 12; tray layout in the compute tray section); NVIDIA ConnectX-9 SuperNIC datasheet (per-port rate over InfiniBand and Ethernet).</p>
+</div>
+</div>
+<div class="part-grid flip subblock">
+<figure class="shot splitfig">
+<img alt="NVIDIA BlueField-4 DPU product graphic with die image and feature list: 64-core Grace CPU, ConnectX-9 networking up to 800 Gb/s over PCIe Gen6, RDMA-accelerated storage and zero-trust security" src="assets/bluefield-4.webp"/>
+<span class="splitview"><img alt="NVIDIA BlueField-4 DPU product graphic with die image and feature list: 64-core Grace CPU, ConnectX-9 networking up to 800 Gb/s over PCIe Gen6, RDMA-accelerated storage and zero-trust security" src="assets/bluefield-4-p1.webp"/><img alt="" src="assets/bluefield-4-p2.webp"/><img alt="" src="assets/bluefield-4-p3.webp"/></span>
+<figcaption>Image: NVIDIA — the BlueField-4 DPU. Source: NVIDIA Technical Blog, “<a href="https://developer.nvidia.com/blog/inside-the-nvidia-rubin-platform-six-new-chips-one-ai-supercomputer/">Inside the NVIDIA Rubin Platform</a>” (Figure 13).</figcaption>
+</figure>
+<div>
+<h5 class="blocktitle">BlueField-4 DPU: The Operating System of the AI Factory</h5>
+<p>Every compute tray also carries two BlueField-4 DPUs — one paired with each Vera CPU — complete computers dedicated to infrastructure, so that networking, storage, security and telemetry never compete with the host CPUs and GPUs doing AI work. BlueField-4 is a dual-die package: a 64-core NVIDIA Grace CPU (Arm Neoverse V2) fused with an integrated ConnectX-9 networking die, running NVIDIA’s DOCA software platform and its microservices entirely off-host. That is why NVIDIA calls it the processor powering the operating system of the AI factory. Its ASTRA trust architecture establishes a trust domain inside the tray — the control point that makes secure bare-metal, multi-tenant operation possible — and the same DPU powers NVIDIA’s Inference Context Memory Storage tier, serving and pre-staging KV cache for long-context inference. Against BlueField-3, every axis moves by multiples: twice the network bandwidth, six times the compute, more than three times the memory bandwidth.</p>
+<ul class="specs">
+<li><b>Two BlueField-4 DPUs per compute tray</b> <span>— one paired with each Vera CPU</span></li>
+<li><b>800 Gb/s networking</b> <span>via the integrated ConnectX-9 die — 2x BlueField-3’s 400 Gb/s</span></li>
+<li><b>64 Grace cores (Arm Neoverse V2)</b> <span>—</span> <b>6x the compute</b> <span>of BlueField-3’s 16 Arm A78 cores</span></li>
+<li><b>128 GB LPDDR5X</b> <span>at</span> <b>250 GB/s</b> <span>memory bandwidth (BlueField-3: 32 GB at 75 GB/s)</span></li>
+<li><b>800 Gb/s inline AES-XTS cryptography</b> <span>with real-time data inspection and threat detection; PCIe Gen6 host interface</span></li>
+<li><b>20M IOPS</b> <span>NVMe storage disaggregation at 4K (2x BlueField-3); cloud networking scale of</span> <b>128K hosts</b> <span>(4x)</span></li>
+<li><b>Up to 5x tokens-per-second</b> <span>and up to 5x power efficiency for the BlueField-4-powered Inference Context Memory Storage tier vs. traditional storage, per NVIDIA</span></li>
+</ul>
+<p class="src">Sources: NVIDIA Technical Blog, “Inside the NVIDIA Rubin Platform” (BlueField-4 section, Figure 13, and the BlueField-3 vs. BlueField-4 comparison, Table 5); NVIDIA BlueField networking platform page (800 Gb/s infrastructure platform, six times the compute of its predecessor); NVIDIA GTC Washington, DC announcement, “NVIDIA Launches BlueField-4: The Processor Powering the Operating System of AI Factories” (Oct 27, 2025).</p>
+</div>
+</div>
+<div class="part-grid subblock">
+<figure class="shot">
+<img alt="NVIDIA Spectrum-6 Ethernet switch product graphic: 102.4 Tb/s of bandwidth through 512 ports of 200 Gb/s Ethernet with co-packaged optics" src="assets/spectrum-6.webp"/>
+<figcaption>Image: NVIDIA — the Spectrum-6 Ethernet switch chip. Source: NVIDIA Technical Blog, “<a href="https://developer.nvidia.com/blog/inside-the-nvidia-rubin-platform-six-new-chips-one-ai-supercomputer/">Inside the NVIDIA Rubin Platform</a>” (Figure 14).</figcaption>
+</figure>
+<div>
+<h5 class="blocktitle">The Fabric They Plug Into: Spectrum-6 &amp; Spectrum-X</h5>
+<p>Endpoints are only half the fabric. ConnectX-9 and BlueField-4 plug into Spectrum-X Ethernet, whose Rubin-generation switch silicon is Spectrum-6: a single switch chip delivering 102.4 Tb/s through 512 ports of 200 Gb/s Ethernet, with co-packaged optics (Spectrum-X Ethernet Photonics) that integrate the optical engines into the switch package for denser, more power-efficient fabrics. Spectrum-6 defines fabric-level behavior, ConnectX-9 enforces endpoint behavior, and BlueField-4 operates the result — the three together are what let an AI factory scale out across racks and across sites while keeping the bursty, synchronized traffic of AI workloads predictable.</p>
+<ul class="specs">
+<li><b>102.4 Tb/s</b> <span>per Spectrum-6 switch chip — 2x the prior generation</span></li>
+<li><b>512 × 200 Gb/s</b> <span>Ethernet ports, with co-packaged optics on Spectrum-X Ethernet Photonics switches</span></li>
+<li><b>Scale-out and scale-across</b> <span>one Spectrum-X fabric from rack clusters to geographically dispersed sites</span></li>
+</ul>
+<p class="src">Source: NVIDIA Technical Blog, “Inside the NVIDIA Rubin Platform” (Spectrum-6 section and Figure 14).</p>
+</div>
+</div>
+</div>
+</section>
+<!-- ============ 7. BUSBAR & POWER ============ -->
+<section class="part">
+<div class="wrap part-grid solo">
+<div>
+<h5 class="sub">Power Delivery</h5>
+<h4><span class="no">07</span>Liquid-Cooled Busbar</h4>
+<p>Power reaches the trays through a liquid-cooled busbar that runs the height of the rack — a solid copper rail fed by the rack’s power shelves, rated for up to 5,000 amps. Cooling the busbar itself, not just the chips, is what lets the third-generation MGX design support rack deployments of up to 250 kW. On top of the rail, Intelligent Power Smoothing uses rack-level energy storage to flatten the violent load swings of AI training, cutting peak current demand by up to 25%.</p>
+<ul class="specs">
+<li><b>Up to 5,000 A</b> <span>liquid-cooled busbar rating</span></li>
+<li><b>Up to 250 kW</b> <span>rack deployments supported by the MGX 1.2 design</span></li>
+<li><b>400 J per GPU</b> <span>rack-level energy storage — 6x the prior generation</span></li>
+<li><b>Up to 25%</b> <span>reduction in peak current demand</span></li>
+</ul>
+<p class="src">Sources: NVIDIA Developer Blog, “NVIDIA Vera Rubin POD” (busbar rating, power smoothing); NVIDIA Blog, OCP Global Summit announcement, Oct 12, 2026 (MGX 1.2, 250 kW).</p>
+</div>
+</div>
+</section>
+<!-- ============ 8. LIQUID COOLING ============ -->
+<section class="part">
+<div class="wrap">
+<h5 class="sub">Thermal Management</h5>
+<h4><span class="no">08</span>The Liquid-Cooling System</h4>
+<p class="wide">Vera Rubin NVL72 is 100% liquid-cooled — there are no fans in the rack, and air plays no part in removing GPU heat. The cooling chain is two loops joined at one machine: a facility loop brings warm water to a coolant distribution unit (CDU), and the CDU’s heat exchanger and pumps drive a separate, tightly controlled rack loop through manifolds and quick disconnects to cold plates on every CPU and GPU. NVIDIA designs the whole chain for 45°C warm water — hot enough that many data centers can reject heat with dry coolers alone, with no chillers, for much of the year.</p>
+<div class="part-grid subblock">
+<figure class="shot">
+<img alt="NVIDIA schematic of the free-cooling layout for MGX racks: a dry cooler and a heat exchanger carry the full cooling load with the water-cooled chiller bypassed; coolant flows to the AI factory at 41 degrees C and returns at 51 degrees C" src="assets/mgx-cooling-layout.webp"/>
+<figcaption>Image: NVIDIA — the free-cooling layout for MGX racks: the dry cooler and heat exchanger do all the cooling, with the mechanical chiller bypassed. Source: NVIDIA Developer Blog, “<a href="https://developer.nvidia.com/blog/nvidia-vera-rubin-pod-seven-chips-five-rack-scale-systems-one-ai-supercomputer/">NVIDIA Vera Rubin POD</a>” (Figure 5).</figcaption>
+</figure>
+<div>
+<h5 class="blocktitle">The CDU’s Place in the Loop</h5>
+<p>NVIDIA’s reference layout gives the CDU a precise job: the facility delivers water at 41°C to the CDUs, and the CDUs in turn supply coolant at 45°C to the AI racks. Sitting between the two loops, the CDU isolates the clean rack-side coolant — de-ionized water or a PG25 glycol mix, rated to last up to 10 years in a closed loop — from whatever the building’s water plant provides, while its pumps set the flow and pressure the racks actually see.</p>
+<ul class="specs">
+<li><b>41°C</b> <span>facility water delivered to the CDUs;</span> <b>45°C</b> <span>coolant supplied to the racks</span></li>
+<li><b>Up to 30% more GPUs</b> <span>in the same power budget with 45°C liquid cooling</span></li>
+<li><b>DI water or PG25</b> <span>rack-loop coolant,</span> <b>up to 10 years</b> <span>of service life in a closed loop</span></li>
+<li><b>100% liquid-cooled</b> <span>racks, on the same facility cooling infrastructure as prior generations</span></li>
+</ul>
+<p class="src">Source: NVIDIA Developer Blog, “NVIDIA Vera Rubin POD” (cooling layout, Figure 5, and MGX cooling sections).</p>
+</div>
+</div>
+<div class="part-grid subblock solo">
+<div>
+<h5 class="blocktitle">The CDU Itself</h5>
+<p>Physically, a CDU is a row-level cabinet — heat exchanger, pumps, filtration and controls in a rack-sized enclosure that stands in the row alongside the compute racks it feeds. NVIDIA does not sell a CDU of its own; the units are built by MGX-ecosystem partners to the platform’s envelope and sized to the hall — in-row units cool several racks at once with redundant, hot-swappable pumps for zero-downtime service, and liquid-to-air sidecar CDUs cover halls with no facility water.</p>
+<ul class="specs">
+<li><b>Row-level cabinet</b> <span>— heat exchanger, pumps, filtration and controls in a rack-sized enclosure</span></li>
+<li><b>Redundant, hot-swappable pumps</b> <span>for zero-downtime service</span></li>
+<li><b>Liquid-to-air sidecar options</b> <span>for halls with no facility water</span></li>
+</ul>
+<p class="src">Source: NVIDIA Developer Blog, “NVIDIA Vera Rubin POD” (cooling and MGX ecosystem sections).</p>
+</div>
+</div>
+<div class="part-grid subblock solo">
+<div>
+<h5 class="blocktitle">Cold Plates — Direct-to-Chip Liquid Cooling</h5>
+<p>Liquid coolant is distributed through the rack manifold and compute-tray internal manifolds to cold plates attached directly to the CPUs, GPUs, and selected networking and storage components. Heat is transferred directly into the liquid cooling loop, eliminating the need for air cooling of the primary compute components.</p>
+<ul class="specs">
+<li><b>72 Rubin GPUs + 36 Vera CPUs</b> <span>per NVL72 rack</span></li>
+<li><b>Direct-to-chip liquid cooling</b> <span>across compute trays</span></li>
+<li><b>Cold plates</b> <span>for CPUs, GPUs and selected networking/storage components</span></li>
+</ul>
+<p class="src">Source: NVIDIA Vera Rubin NVL72 product page (nvidia.com).</p>
+</div>
+</div>
+<div class="part-grid flip subblock">
+<figure class="shot mgx-fig">
+<img alt="NVIDIA MGX NVL Rack and MGX ETL Rack shown at the same scale, front and back views, with compute tray, switch tray and NVLink spine annotations" src="assets/mgx-rack-ecosystem-racks.webp"/>
+<img alt="One rack-scale ecosystem: 80+ MGX ecosystem partners across rack, power, cooling and cabling components" src="assets/mgx-rack-ecosystem-partners.webp"/>
+<figcaption>Image: NVIDIA — MGX NVL and MGX ETL racks share the same MGX component set, including liquid-cooling manifolds, quick disconnects and leak containment trays. Source: NVIDIA Developer Blog, “<a href="https://developer.nvidia.com/blog/nvidia-vera-rubin-pod-seven-chips-five-rack-scale-systems-one-ai-supercomputer/">NVIDIA Vera Rubin POD</a>” (Figure 10).</figcaption>
+</figure>
+<div>
+<h5 class="blocktitle">Manifolds, Quick Disconnects &amp; Leak Containment</h5>
+<p>Inside the rack, the coolant plumbing is hose-free. A redesigned internal manifold in each compute tray and the rack’s UQD08 manifold distribute flow to every tray, and universal quick disconnects make the fluid connection as the tray slides home — the blind-mate design is what lets a tray be pulled and replaced without draining the loop. Under the fluid path, the MGX component set standardizes leak containment trays. Leak detection is likewise part of the NVL72 reference pattern — partner reference designs specify rack leak-detection modules and leak trays per NVIDIA’s leak-detection strategy — although NVIDIA has not yet published a Vera Rubin-specific sensor layout.</p>
+<ul class="specs">
+<li><b>Internal tray manifolds</b> <span>+</span> <b>rack UQD08 manifolds</b> <span>new in the third-generation MGX rack</span></li>
+<li><b>Redesigned manifold + universal quick disconnects</b> <span>support significantly higher flow rates than prior generations</span></li>
+<li><b>Leak containment trays</b> <span>standardized in the MGX ecosystem component set</span></li>
+<li><b>Rack leak-detection module &amp; leak tray</b> <span>specified per NVIDIA’s leak-detection strategy</span> <span>(per prior-generation partner documentation for GB300 NVL72)</span></li>
+</ul>
+<p class="src">Sources: NVIDIA Developer Blog, “NVIDIA Vera Rubin POD”; NVIDIA Technical Blog, “Inside the NVIDIA Rubin Platform” (compute tray section).</p>
+</div>
+</div>
+</div>
+</section>
+<p class="tour-foot">Product images © NVIDIA Corporation, reproduced from NVIDIA’s official website (nvidia.com), NVIDIA Technical Blog and NVIDIA Developer Blog, as credited under each image. Performance figures are NVIDIA’s published specifications; NVIDIA notes that specifications are preliminary and subject to change. RunSun reservation terms for Vera Rubin capacity are available on request — no list price is published for Vera Rubin.</p>
+</div>
+</div>
+</section><section class="section" id="compare">
+<div class="wrap">
+<h2>Vera Rubin, head to head with B300, GB300, H200 and H100</h2>
+<p class="section-intro">Vera Rubin leads the line-up. Here is how the Rubin generation compares with the Blackwell platforms available today and the Hopper generation.</p>
+<div aria-label="GPU platform comparison" class="table-scroll" role="region" tabindex="0">
+<table class="price-table compare-table">
+<thead>
+<tr>
+<th scope="col"></th>
+<th class="hl" scope="col">NVIDIA Vera Rubin NVL72</th>
+<th scope="col">NVIDIA B300</th>
+<th scope="col">NVIDIA GB300 NVL72</th>
+<th scope="col">NVIDIA H200</th>
+<th scope="col">NVIDIA H100</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Form factor</th>
+<td class="hl">Rack-scale system, 72 GPUs</td>
+<td>8-GPU HGX node</td>
+<td>Rack-scale system, 72 GPUs</td>
+<td>SXM GPU</td>
+<td>SXM GPU</td>
+</tr>
+<tr>
+<th scope="row">GPU memory</th>
+<td class="hl">288 GB HBM4 per GPU (20.7 TB per rack)</td>
+<td>288 GB HBM3e per GPU</td>
+<td>288 GB HBM3e per GPU (20 TB per rack)</td>
+<td>141 GB HBM3e</td>
+<td>80 GB HBM3</td>
+</tr>
+<tr>
+<th scope="row">Memory bandwidth</th>
+<td class="hl">22 TB/s per GPU</td>
+<td>8 TB/s per GPU</td>
+<td>8 TB/s per GPU</td>
+<td>4.8 TB/s</td>
+<td>3.35 TB/s</td>
+</tr>
+<tr>
+<th scope="row">NVLink</th>
+<td class="hl">NVLink 6 — 3.6 TB/s per GPU</td>
+<td>NVLink 5 — 1.8 TB/s per GPU</td>
+<td>NVLink 5 — 130 TB/s per rack</td>
+<td>NVLink — 900 GB/s</td>
+<td>NVLink — 900 GB/s</td>
+</tr>
+<tr>
+<th scope="row">AI compute</th>
+<td class="hl">50 PFLOPS NVFP4 inference per GPU</td>
+<td>15 PFLOPS NVFP4 (dense) per GPU</td>
+<td>~1.1 EFLOPS FP4 per rack</td>
+<td>3,958 TFLOPS FP8 (sparse)</td>
+<td>3,958 TFLOPS FP8 (sparse)</td>
+</tr>
+<tr>
+<th scope="row">At RunSun</th>
+<td class="hl"><span class="status-live">Reservations open — available in Q2 2027</span></td>
+<td>Available now</td>
+<td>Available now</td>
+<td>Available now</td>
+<td>Available now</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="footnote">Figures are NVIDIA's published specifications: Vera Rubin per the NVIDIA Technical Blog and Developer Blog and the Vera Rubin NVL72 product page; B300 and GB300 NVL72 per NVIDIA's Blackwell Ultra platform specifications; H200 and H100 per NVIDIA's official GPU specification tables. Each generation's headline low-precision format is shown (NVFP4 on Rubin and Blackwell, FP8 on Hopper), so compute figures are indicative across generations rather than directly interchangeable. NVIDIA describes Vera Rubin specifications as preliminary and subject to change.</p>
+</div>
+</section></main>
+<footer class="site-footer">
+<div class="wrap">
+<div class="footer-grid">
+<div>
+<a class="logo" href="index.html#top"><img alt="RunSun" class="brand-logo" src="assets/runsun-logo.png"/></a>
+<p class="footer-tag">GPU cloud led by NVIDIA Vera Rubin, B300 and GB300 NVL72, with Token Engine on top.</p>
+</div>
+<nav aria-label="Footer" class="footer-nav">
+<ul>
+<li><a href="index.html#about">About</a></li>
+<li><a href="index.html#industries">Industries</a></li>
+<li><a href="index.html#gpus">GPUs</a></li>
+<li><a href="index.html#services">Services</a></li>
+<li><a href="index.html#token">Token</a></li>
+<li><a href="index.html#pricing">Pricing</a></li>
+<li><a href="index.html#regions">Regions</a></li>
+<li><a href="index.html#contact">Contact</a></li>
+</ul>
+</nav>
+<div class="footer-side">
+<a class="btn btn-primary" href="https://www.rstoken.ai" rel="noopener" target="_blank">Explore Token Engine →</a>
+<div class="social-row">
+<a aria-label="RunSun Cloud on LinkedIn" class="social-link" href="https://www.linkedin.com/company/runsuncloud" rel="noopener" target="_blank">in</a>
+<a class="locale-link" href="https://www.runsuncloud.jp/" hreflang="ja" lang="ja">日本語サイト</a>
+</div>
+</div>
+</div>
+<p class="footer-legal">© 2026 RunSun. RUNSUN CLOUD PTE. LTD.</p>
+</div>
+</footer>
+</body>
+</html>
