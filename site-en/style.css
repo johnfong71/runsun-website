@@ -123,3 +123,10 @@
  repeating-linear-gradient(130deg,transparent 0 60px,rgba(255,255,255,.13) 61px 62px,transparent 63px 124px);}
 .hero .slide.s-en1 .inner {position:relative;z-index:1;}
 /* Do not style photographs as diagrams. Abstract flowcharts use logo orange. */
+
+
+/* V3.2: Four business-presence cards are one region section, not mixed with solutions. */
+.region-presence-grid {align-items:stretch;gap:20px}
+.region-presence-grid > .card {min-height:230px}
+.region-presence-grid .status {font-size:.72em;letter-spacing:.02em;vertical-align:middle;color:#a94b12;background:#fff0e4;border:1px solid #f5c7a8;border-radius:999px;padding:4px 10px;white-space:nowrap}
+@media(max-width:720px) {.region-presence-grid {grid-template-columns:1fr}.region-presence-grid > .card {min-height:0}}
