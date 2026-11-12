@@ -3,7 +3,7 @@
 
 
 /* RunSun editorial redesign — scoped additions */
-.hero .slide.s-en1 {background:linear-gradient(115deg,rgba(4,20,43,.95),rgba(7,51,98,.80)),url('assets/about-latest-gpu.jpg') center/cover;}
+.hero .slide.s-en1 {background:linear-gradient(110deg,#F25800 0%,#FF6B16 58%,#FF9955 100%);color:#fff;}
 .hero .slide.s-en1 h2 {max-width:850px;}
 .sovereign-section .sovereign{margin-top:18px}
 .sovereign-section .sovereign-figure figcaption{font-size:.83rem;opacity:.76;margin-top:12px;line-height:1.5}
@@ -115,3 +115,11 @@
  .architecture-diagram,.architecture-diagram.compact {padding:24px 15px}
  .architecture-diagram div {padding:12px 14px}
 }
+
+/* V3.1 brand consistency: editorial/text banners use RunSun orange;
+   GPU hardware photography is left unaltered. */
+.hero .slide.s-en1::before {content:"";position:absolute;inset:0;pointer-events:none;opacity:.16;
+ background:radial-gradient(circle at 82% 28%,rgba(255,255,255,.48),transparent 32%),
+ repeating-linear-gradient(130deg,transparent 0 60px,rgba(255,255,255,.13) 61px 62px,transparent 63px 124px);}
+.hero .slide.s-en1 .inner {position:relative;z-index:1;}
+/* Do not style photographs as diagrams. Abstract flowcharts use logo orange. */
