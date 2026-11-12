@@ -1576,3 +1576,22 @@ figure.stack-figure.fx-surface { overflow: hidden; border-radius: var(--radius);
 @media (min-width: 821px) and (max-width: 873px) {
   .stat-fit strong { font-size: 1.5rem; }
 }
+
+
+/* V3.3: Japanese AI Factory comparison and RunSun orange editorial surfaces */
+.v3jp-factory{background:linear-gradient(180deg,#fff9f4,#fff);padding-block:clamp(40px,5vw,76px)}
+.v3jp-factory .eyebrow{color:#c44e00;font-weight:800;letter-spacing:.08em}
+.v3jp-factory .section-intro{max-width:900px}
+.v3jp-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:28px 0 18px}
+.v3jp-card{background:#fff;border:1px solid #f0d8c6;border-radius:18px;padding:26px 23px;box-shadow:0 8px 28px rgba(73,34,5,.05)}
+.v3jp-card>span{font-size:.73rem;font-weight:800;letter-spacing:.1em;color:#b65a21}
+.v3jp-card h3{font-size:1.25rem;line-height:1.35;margin:13px 0}
+.v3jp-card p{line-height:1.8;font-size:.95rem}
+.v3jp-card.v3jp-featured{border:2px solid #ff6000;background:linear-gradient(160deg,#fff5ed,#fff);box-shadow:0 15px 30px rgba(255,96,0,.12)}
+.v3jp-card .cta{display:inline-block;margin-top:12px;background:#ff6000;color:#fff;border-radius:8px;padding:11px 18px;text-decoration:none;font-weight:750}
+.v3jp-note{font-size:.85rem;color:#766358;line-height:1.65}
+.v3jp-region{align-items:stretch}
+.v3jp-region .card{min-height:190px}
+#sovereign .sovereign{margin-top:18px}
+#sovereign .sovereign-figure img{max-width:100%;height:auto}
+@media(max-width:850px){.v3jp-grid{grid-template-columns:1fr}.v3jp-region{grid-template-columns:1fr}}
